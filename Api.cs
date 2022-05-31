@@ -10,15 +10,15 @@ public static class Api
 {
     public static void MapApi(this IEndpointRouteBuilder app)
     {
-        app.MapGet("dayAtWork", Get);
+        app.MapGet("dayAtWork/{userId}", Get);
         app.MapPut("dayAtWork", Update);
     }
 
-    private static async Task<Ok<List<DayAtWork>>> Get([FromServices] Db db) => 
-        Results.Extensions.Ok(await db.DayAtWorks.AsNoTracking().ToListAsync());
+    private static async Task<Ok<List<DayAtWork>>> Get(string userId, [FromServices] Db db) => 
+        Results.Extensions.Ok(await db.DayAtWorks.AsNoTracking().Where(d => d.UserId.Equals(userId) && d.Date >= DateTime.Today).ToListAsync());
 
     private static async Task<Ok> Update([FromBody]DayAtWork dayAtWork, [FromServices] Db db)
-    {        
+    {   
         await db.AddOrUpdate(dayAtWork, d => new object[] { d.UserId, d.Date });
         await db.SaveChangesAsync();
         
@@ -55,7 +55,8 @@ public class DayType : SmartEnum<DayType>
     public static DayType Full = new("FULL", 0);
     public static DayType FirstHalf = new("FIRST-HALF", 1);
     public static DayType LastHalf = new("LAST-HALF", 2);
-    
+    public static DayType Empty = new("EMPTY", 3);
+
     public DayType(string name, int value) : base(name, value)
     {}
 }

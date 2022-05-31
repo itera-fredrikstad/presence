@@ -4,7 +4,7 @@
 
   const queryClient = new QueryClient();
 
-  let page = document.location.hash;
+  let page = document?.location?.hash;
 
   window.onpopstate = function () {
     page = document.location.hash;
@@ -28,7 +28,7 @@
       {#if page === "#oversikt"}
         <h1>Oversikt</h1>
       {:else}
-        <Picker userId="thomas.andresen@itera.com" />
+        <Picker />
       {/if}
     </div>
   </QueryClientProvider>
@@ -54,7 +54,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-right: 2rem;
+    margin-right: 5rem;
   }
 
   .navigation ul {
@@ -74,6 +74,6 @@
 
   .logo {
     width: 56px;
-    margin-left: 2rem;
+    margin-left: 5rem;
   }
 </style>
