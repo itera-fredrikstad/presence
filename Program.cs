@@ -1,27 +1,46 @@
+using Ardalis.SmartEnum.SystemTextJson;
+using Itera.Fredrikstad.Presence;
+using Microsoft.AspNetCore.Http.Json;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddCors();
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddEndpointsProvidesMetadataApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.Configure<JsonOptions>(opts =>
+{
+    opts.SerializerOptions.WriteIndented = true;
+    opts.SerializerOptions.Converters.Add(new SmartEnumNameConverter<DayType, int>());
+});
+
+builder.Services.AddDbContext<Db>((provider, opt) => opt.UseSqlServer(provider.GetService<IConfiguration>().GetConnectionString("Sql")));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<Db>();
+    context.Database.EnsureCreated();
 }
+
+app.UseCors(opts => {
+    opts.AllowAnyOrigin();
+    opts.AllowAnyMethod();
+    opts.AllowAnyHeader();
+});
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller}/{action=Index}/{id?}");
-
-app.MapFallbackToFile("index.html"); ;
+app.MapApi();
+app.MapFallbackToFile("index.html");
 
 app.Run();
