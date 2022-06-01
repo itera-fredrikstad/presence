@@ -1,6 +1,6 @@
 <script lang="ts">
   import { QueryClient, QueryClientProvider } from "@sveltestack/svelte-query";
-  import Picker from "./lib/Picker.svelte";
+  import Picker from "./lib/components/Picker.svelte";
 
   const queryClient = new QueryClient();
 

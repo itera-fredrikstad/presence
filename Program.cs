@@ -16,7 +16,7 @@ builder.Services.Configure<JsonOptions>(opts =>
     opts.SerializerOptions.Converters.Add(new SmartEnumNameConverter<DayType, int>());
 });
 
-builder.Services.AddDbContext<Db>((provider, opt) => opt.UseSqlServer(provider.GetService<IConfiguration>().GetConnectionString("Sql")));
+builder.Services.AddDbContext<Db>((provider, opt) => opt.UseSqlServer(provider.GetService<IConfiguration>().GetConnectionString("Sql"), sql => sql.EnableRetryOnFailure()));
 
 var app = builder.Build();
 

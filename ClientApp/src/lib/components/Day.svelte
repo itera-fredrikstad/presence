@@ -3,11 +3,11 @@
   import { format, isFirstDayOfMonth } from "date-fns";
   import { nb } from "date-fns/locale";
   
-  import type { Identifiable, DayAtWork, DayAtWorkType } from "./models";
+  import type { Identifiable, DayAtWork, DayAtWorkType } from "../models";
 
   export let day: Date;
-  export let onUpdate: (dayAtWork: Partial<DayAtWork>) => void;
   export let dayAtWork: (Identifiable<DayAtWork> | undefined) = null;
+  export let onUpdate: (dayAtWork: Partial<DayAtWork>) => void;
 
   let editComment: boolean;
   let commentField: any;

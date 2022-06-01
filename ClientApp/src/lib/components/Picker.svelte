@@ -15,10 +15,10 @@
     formatISO,
   } from "date-fns";
   import { nb } from "date-fns/locale";
-  import { getDayAtWorkItemsForUser } from "./api";
+  import { getDayAtWorkItemsForUser } from "../api";
   import Day from "./Day.svelte";
-  import type { DayAtWork, Identifiable } from "./models";
-  import { getDayId } from "./utils";
+  import type { DayAtWork, Identifiable } from "../models";
+  import { getDayId } from "../utils";
 
   const queryClient = useQueryClient();
 

@@ -6,16 +6,26 @@ using MinimalApis.Extensions.Results;
 
 namespace Itera.Fredrikstad.Presence;
 
+public record DayAttendee(string UserId, DayType Type, string? Comment = null);
+public record DaySummary(DateTime Date, List<DayAttendee> Attendees);
+
 public static class Api
 {
     public static void MapApi(this IEndpointRouteBuilder app)
     {
+        app.MapGet("daySummary", GetDaySummary);
         app.MapGet("dayAtWork/{userId}", Get);
         app.MapPut("dayAtWork", Update);
     }
 
     private static async Task<Ok<List<DayAtWork>>> Get(string userId, [FromServices] Db db) => 
         Results.Extensions.Ok(await db.DayAtWorks.AsNoTracking().Where(d => d.UserId.Equals(userId) && d.Date >= DateTime.Today).ToListAsync());
+
+    private static async Task<Ok<DaySummary>> GetDaySummary([FromQuery]DateTime date, [FromServices] Db db)
+    {
+        var attendees = await db.DayAtWorks.AsNoTracking().Where(d => d.Date >= date && d.Date < date.AddDays(1) && d.Type != DayType.Empty).ToListAsync();
+        return Results.Extensions.Ok(new DaySummary(date, attendees.Select(a => new DayAttendee(a.UserId, a.Type, a.Comment)).ToList()));
+    }
 
     private static async Task<Ok> Update([FromBody]DayAtWork dayAtWork, [FromServices] Db db)
     {   
