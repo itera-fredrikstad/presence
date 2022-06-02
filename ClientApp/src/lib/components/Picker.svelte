@@ -154,7 +154,7 @@
   ];
 
   function handleSelectUser(event: any) {
-    userId = event.detail.value;
+    userId = event?.detail?.value;
   }
 </script>
 
