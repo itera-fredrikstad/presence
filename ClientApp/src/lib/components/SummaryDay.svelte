@@ -6,6 +6,7 @@
   import type { Identifiable, DayAtWork, DayAtWorkType } from "../models";
   import { useQuery } from "@sveltestack/svelte-query";
   import { getDayAtWorkItems } from "../api";
+  import { users } from "../users";
 
   export let day: Date;
 
@@ -47,7 +48,7 @@
       class:last-half={isLastHalf(attendee)}
       class="attendee"
     >
-      <p>{attendee.userId}</p>
+      <p>{users[attendee.userId]}</p>
     </div>
   {/each}
 </div>
@@ -64,7 +65,6 @@
     align-items: flex-start;
     flex-basis: 20%;
     max-width: 20%;
-    overflow-x: hidden;
     flex-shrink: 0;
   }
 
@@ -108,6 +108,7 @@
     font-size: 1rem;
     background-color: #efefef;
     padding: 0.2rem 0.5rem;
+    max-width: 100%;
   }
 
   .day h2 {
@@ -115,10 +116,15 @@
     font-size: 1.2rem;
     background-color: #efefef;
     padding: 0.2rem 0.5rem;
+    max-width: 100%;
   }
 
   .day p {
+    display: block;
     padding: 0.2rem 0.5rem;
     margin: 0.5rem 0;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 </style>

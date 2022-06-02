@@ -17,6 +17,7 @@
   import { getDayAtWorkItemsForUser, getPublicHolidays } from "../api";
   import Day from "./Day.svelte";
   import type { DayAtWork, Identifiable } from "../models";
+  import { users } from "../users";
   import { getDayId } from "../utils";
 
   const queryClient = useQueryClient();
@@ -141,18 +142,6 @@
     });
   }
 
-  const users = [
-    { value: "lise.eastgate@itera.com", label: "Lise Eastgate" },
-    { value: "petter.kristensen@itera.com", label: "Alf Petter Kristensen" },
-    { value: "martin.skauen@itera.com", label: "Martin Skauen" },
-    { value: "ulrikke.akerbaek@itera.com", label: "Ulrikke Akerbæk" },
-    { value: "thomas.julsen@itera.com", label: "Thomas Julsen" },
-    { value: "emilie.rosnaes@itera.com", label: "Emilie Røsnæs" },
-    { value: "henrik.elkjaer.hagen@itera.com", label: "Henrik Elkjær Hagen" },
-    { value: "anders.klund.hansen@itera.com", label: "Anders Klund-Hansen" },
-    { value: "thomas.andresen@itera.com", label: "Thomas Westlund-Andresen" },
-  ];
-
   function handleSelectUser(event: any) {
     userId = event?.detail?.value;
   }
@@ -168,7 +157,7 @@
     </h2>
     <div class="select-container">
       <Select 
-        items={users} 
+        items={Object.keys(users).map(u => ({ value: u, label: users[u] }))} 
         placeholder="Velg bruker" 
         showChevron={true}
         on:select="{handleSelectUser}" />
