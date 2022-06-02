@@ -1,6 +1,7 @@
 <script lang="ts">
   import { QueryClient, QueryClientProvider } from "@sveltestack/svelte-query";
   import Picker from "./lib/components/Picker.svelte";
+  import Summary from "./lib/components/Summary.svelte";
 
   const queryClient = new QueryClient();
 
@@ -26,7 +27,7 @@
   <QueryClientProvider client={queryClient}>
     <div class="content-root">
       {#if page === "#oversikt"}
-        <h1>Oversikt</h1>
+        <Summary />
       {:else}
         <Picker />
       {/if}

@@ -6,3 +6,8 @@ export type DayAtWork = {
     comment?: string;
 };
 export type Identifiable<T> = T & { id: string; };
+
+export type DaySummary = {
+    date: Date,
+    attendees: DayAtWork[]
+}

@@ -1,8 +1,10 @@
 import axios from "axios";
-import type { DayAtWork, DayAtWorkType, Identifiable } from "./models";
+import { formatISO } from "date-fns";
+import type { DayAtWork, DayAtWorkType, DaySummary, Identifiable } from "./models";
 import { getDayId, map } from "./utils";
 
 export type DayAtWorkItemsMap = { [id: string]: Identifiable<DayAtWork> };
+
 export type DayAtWorkDto = {
   userId: string;
   date: string;
@@ -28,4 +30,13 @@ export async function getDayAtWorkItemsForUser(userId: string): Promise<DayAtWor
       }))))
     }),
     {} as DayAtWorkItemsMap);
+}
+
+export async function getDayAtWorkItems(day: Date): Promise<DayAtWork[]> {
+  const date = formatISO(day, {representation: "date"})
+  const res = await axios
+    .get<DaySummary>(`https://localhost:7080/daySummary?date=${date}`);
+
+
+  return res.data.attendees
 }
