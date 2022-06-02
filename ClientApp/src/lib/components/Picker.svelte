@@ -77,7 +77,7 @@
 
   const mutation = useMutation(
     (newDayAtWork: any) =>
-      postData("https://localhost:7080/dayAtWork", newDayAtWork),
+      postData("api/dayAtWork", newDayAtWork),
     {
       // When mutate is called:
       onMutate: async (newTodo) => {
@@ -143,9 +143,15 @@
         .join("/")})
     </h2>
     <select bind:value={userId}>
-      <option value="thomas.andresen@itera.com">Thomas Andresen</option>
       <option value="lise.eastgate@itera.com">Lise Eastgate</option>
       <option value="anders.klund.hansen@itera.com">Anders Klund-Hansen</option>
+      <option value="petter.kristensen@itera.com">Alf Petter Kristensen</option>
+      <option value="martin.skauen@itera.com">Martin Skauen</option>
+      <option value="ulrikke.akerbaek@itera.com">Ulrikke Akerbæk</option>
+      <option value="thomas.julsen@itera.com">Thomas Julsen</option>
+      <option value="emilie.rosnaes@itera.com">Emilie Røsnæs</option>
+      <option value="henrik.elkjaer.hagen@itera.com">Henrik Elkjaer Hagen</option>
+      <option value="thomas.andresen@itera.com">Thomas Westlund-Andresen</option>
     </select>
   </div>
   {#if !userId}

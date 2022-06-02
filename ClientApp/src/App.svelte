@@ -3,6 +3,8 @@
   import Picker from "./lib/components/Picker.svelte";
   import Summary from "./lib/components/Summary.svelte";
 
+  import logo from "./assets/img/itera.png";
+
   const queryClient = new QueryClient();
 
   let page = document?.location?.hash;
@@ -14,7 +16,7 @@
 
 <main>
   <div class="navigation">
-    <img class="logo" src="/src/assets/img/itera.png" alt="Logo" />
+    <img class="logo" src={logo} alt="Logo" />
     <ul>
       <li>
         <a href="#registrering">Registrering</a>

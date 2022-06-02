@@ -14,7 +14,7 @@ export type DayAtWorkDto = {
 
 export async function getDayAtWorkItemsForUser(userId: string): Promise<DayAtWorkItemsMap> {
   const res = await axios
-    .get<DayAtWorkDto[]>("https://localhost:7080/dayAtWork/" + userId);
+    .get<DayAtWorkDto[]>(`api/dayAtWork/${userId}`);
   
   return res.data.reduce(
     (p, n) => ({
@@ -35,7 +35,7 @@ export async function getDayAtWorkItemsForUser(userId: string): Promise<DayAtWor
 export async function getDayAtWorkItems(day: Date): Promise<DayAtWork[]> {
   const date = formatISO(day, {representation: "date"})
   const res = await axios
-    .get<DaySummary>(`https://localhost:7080/daySummary?date=${date}`);
+    .get<DaySummary>(`api/daySummary?date=${date}`);
 
 
   return res.data.attendees

@@ -13,9 +13,9 @@ public static class Api
 {
     public static void MapApi(this IEndpointRouteBuilder app)
     {
-        app.MapGet("daySummary", GetDaySummary);
-        app.MapGet("dayAtWork/{userId}", Get);
-        app.MapPut("dayAtWork", Update);
+        app.MapGet("api/daySummary", GetDaySummary);
+        app.MapGet("api/dayAtWork/{userId}", Get);
+        app.MapPut("api/dayAtWork", Update);
     }
 
     private static async Task<Ok<List<DayAtWork>>> Get(string userId, [FromServices] Db db) => 
