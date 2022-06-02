@@ -12,7 +12,7 @@
     isSaturday,
     isSunday,
     getISOWeek,
-    formatISO,
+    formatISO
   } from "date-fns";
   import { nb } from "date-fns/locale";
   import { getDayAtWorkItemsForUser } from "../api";
@@ -130,7 +130,7 @@
     const daw = dayAtWork ?? createDayAtWork(day);
     const updatedDaw: Identifiable<DayAtWork> = { ...daw, ...updatedDayAtWork };
 
-    $mutation.mutate({ ...updatedDaw, date: formatISO(updatedDaw.date) });
+    $mutation.mutate({ ...updatedDaw, date: formatISO(updatedDaw.date, { representation: "date" }) });
   }
 </script>
 

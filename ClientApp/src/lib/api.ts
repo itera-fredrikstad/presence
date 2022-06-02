@@ -1,5 +1,5 @@
 import axios from "axios";
-import { formatISO } from "date-fns";
+import { formatISO, parseJSON } from "date-fns";
 import type { DayAtWork, DayAtWorkType, DaySummary, Identifiable } from "./models";
 import { getDayId, map } from "./utils";
 
@@ -19,7 +19,7 @@ export async function getDayAtWorkItemsForUser(userId: string): Promise<DayAtWor
   return res.data.reduce(
     (p, n) => ({
       ...p,
-      ...(map(new Date(n.date), date => map(getDayId(date), id => ({
+      ...(map(parseJSON(n.date), date => map(getDayId(date), id => ({
         [id]: ({
           id,
           userId: n.userId,
