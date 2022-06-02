@@ -1,12 +1,14 @@
 <script lang="ts">
   import { afterUpdate } from "svelte";
-  import { format, isFirstDayOfMonth } from "date-fns";
+  import { format, isFirstDayOfMonth, isSaturday, isSunday } from "date-fns";
   import { nb } from "date-fns/locale";
   
   import type { Identifiable, DayAtWork, DayAtWorkType } from "../models";
+import type { PublicHoliday } from "../api";
 
   export let day: Date;
   export let dayAtWork: (Identifiable<DayAtWork> | undefined) = null;
+  export let publicHoliday: PublicHoliday | undefined = null;
   export let onUpdate: (dayAtWork: Partial<DayAtWork>) => void;
 
   let editComment: boolean;
@@ -78,6 +80,10 @@
       commentField.focus();
     }, 100);
   }
+
+  function isNonWorkingDay(day: Date) {
+    return isSaturday(day) || isSunday(day);
+  }
 </script>
 
 <div
@@ -85,6 +91,7 @@
   class:first-half={isFirstHalf(dayAtWork)}
   class:last-half={isLastHalf(dayAtWork)}
   class="day"
+  class:non-working={isNonWorkingDay(day) || !!publicHoliday}
   on:click="{onClick}"
   on:contextmenu|preventDefault={handleStartEditComment}
 >
@@ -95,6 +102,9 @@
     {/if}
   </h1>
   <h2>{format(day, "eeee", { locale: nb })}</h2>
+  {#if !!publicHoliday}
+    <h3>{publicHoliday.name}</h3>
+  {/if}
   <textarea 
     bind:this="{commentField}"
     bind:value="{comment}" 
@@ -112,11 +122,19 @@
     border: 1px solid #999;
     display: flex;
     flex-direction: column;
-    align-content: flex-start;
-    justify-content: flex-start;
-    align-items: flex-start;
-    flex-basis: 20%;
-    flex-shrink: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .non-working {
+    color: #999;
+    background: repeating-linear-gradient(
+      -45deg,
+      #efefef,
+      #efefef 5px,
+      #dfdfdf 5px,
+      #dfdfdf 10px
+    );
   }
 
   .day:hover {
@@ -204,5 +222,13 @@
     font-size: 1.2rem;
     background-color: #efefef;
     padding: 0.2rem 0.5rem;
+  }
+
+  .day h3 {
+    margin: 0;
+    font-size: 0.6rem;
+    background-color: #efefef;
+    padding: 0.2rem 0.5rem;
+    text-transform: uppercase;
   }
 </style>

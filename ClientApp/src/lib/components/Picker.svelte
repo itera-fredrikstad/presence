@@ -9,13 +9,12 @@
     getMonth,
     format,
     eachDayOfInterval,
-    isSaturday,
-    isSunday,
     getISOWeek,
-    formatISO
+    formatISO,
   } from "date-fns";
   import { nb } from "date-fns/locale";
-  import { getDayAtWorkItemsForUser } from "../api";
+  import Select from "svelte-select";
+  import { getDayAtWorkItemsForUser, getPublicHolidays } from "../api";
   import Day from "./Day.svelte";
   import type { DayAtWork, Identifiable } from "../models";
   import { getDayId } from "../utils";
@@ -26,13 +25,14 @@
 
   let today = new Date();
   let offset = 0;
+  let numDays = 5;
 
   $: allDays = eachDayOfInterval({
     start: today,
     end: addWeeks(today, offset + 2),
   });
-  $: workDays = allDays.filter((day) => !isSaturday(day) && !isSunday(day));
-  $: currentWindow = workDays.slice(offset * 5, (offset + 1) * 5);
+  $: workDays = allDays;
+  $: currentWindow = workDays.slice(offset * numDays, (offset + 1) * numDays);
   $: weeks = Object.keys(
     currentWindow.reduce(
       (prev, next) => ({ ...prev, [getISOWeek(next)]: true }),
@@ -43,8 +43,14 @@
     (prev, next) => ({ ...prev, [getMonth(next)]: next }),
     {}
   );
+  $: currentYear = format(currentWindow[0], "yyyy");
 
-  $: query = userId && useQuery(["dayAtWorks", userId], () => getDayAtWorkItemsForUser(userId));
+  $: holidayQuery = useQuery(["publicHolidays", currentYear], () =>
+    getPublicHolidays(currentYear)
+  );
+  $: query =
+    userId &&
+    useQuery(["dayAtWorks", userId], () => getDayAtWorkItemsForUser(userId));
 
   function handleNext() {
     offset++;
@@ -76,8 +82,7 @@
   }
 
   const mutation = useMutation(
-    (newDayAtWork: any) =>
-      postData("api/dayAtWork", newDayAtWork),
+    (newDayAtWork: any) => postData("api/dayAtWork", newDayAtWork),
     {
       // When mutate is called:
       onMutate: async (newTodo) => {
@@ -130,7 +135,26 @@
     const daw = dayAtWork ?? createDayAtWork(day);
     const updatedDaw: Identifiable<DayAtWork> = { ...daw, ...updatedDayAtWork };
 
-    $mutation.mutate({ ...updatedDaw, date: formatISO(updatedDaw.date, { representation: "date" }) });
+    $mutation.mutate({
+      ...updatedDaw,
+      date: formatISO(updatedDaw.date, { representation: "date" }),
+    });
+  }
+
+  const users = [
+    { value: "lise.eastgate@itera.com", label: "Lise Eastgate" },
+    { value: "petter.kristensen@itera.com", label: "Alf Petter Kristensen" },
+    { value: "martin.skauen@itera.com", label: "Martin Skauen" },
+    { value: "ulrikke.akerbaek@itera.com", label: "Ulrikke Akerbæk" },
+    { value: "thomas.julsen@itera.com", label: "Thomas Julsen" },
+    { value: "emilie.rosnaes@itera.com", label: "Emilie Røsnæs" },
+    { value: "henrik.elkjaer.hagen@itera.com", label: "Henrik Elkjær Hagen" },
+    { value: "anders.klund.hansen@itera.com", label: "Anders Klund-Hansen" },
+    { value: "thomas.andresen@itera.com", label: "Thomas Westlund-Andresen" },
+  ];
+
+  function handleSelectUser(event: any) {
+    userId = event.detail.value;
   }
 </script>
 
@@ -142,17 +166,13 @@
         .map((d) => format(d, "MMMM", { locale: nb }))
         .join("/")})
     </h2>
-    <select bind:value={userId}>
-      <option value="lise.eastgate@itera.com">Lise Eastgate</option>
-      <option value="anders.klund.hansen@itera.com">Anders Klund-Hansen</option>
-      <option value="petter.kristensen@itera.com">Alf Petter Kristensen</option>
-      <option value="martin.skauen@itera.com">Martin Skauen</option>
-      <option value="ulrikke.akerbaek@itera.com">Ulrikke Akerbæk</option>
-      <option value="thomas.julsen@itera.com">Thomas Julsen</option>
-      <option value="emilie.rosnaes@itera.com">Emilie Røsnæs</option>
-      <option value="henrik.elkjaer.hagen@itera.com">Henrik Elkjaer Hagen</option>
-      <option value="thomas.andresen@itera.com">Thomas Westlund-Andresen</option>
-    </select>
+    <div class="select-container">
+      <Select 
+        items={users} 
+        placeholder="Velg bruker" 
+        showChevron={true}
+        on:select="{handleSelectUser}" />
+    </div>
   </div>
   {#if !userId}
     <h3>Velg en bruker i nedtrekkslisten.</h3>
@@ -170,11 +190,15 @@
           {#each workDays as day}
             {@const dayId = getDayId(day)}
             {@const dayAtWork = $query?.data?.[dayId]}
-            <Day
-              {day}
-              {dayAtWork}
-              onUpdate={(updated) => handleUpdate(day, dayAtWork, updated)}
-            />
+            {@const publicHoliday = $holidayQuery?.data?.[dayId]}
+            <div class="day-wrapper">
+              <Day
+                {day}
+                {dayAtWork}
+                {publicHoliday}
+                onUpdate={(updated) => handleUpdate(day, dayAtWork, updated)}
+              />
+            </div>
           {/each}
         </div>
       </div>
@@ -189,8 +213,13 @@
 
   .selector-wrapper {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
+  }
+
+  .select-container {
+    --border: none;
+    width: 30%;
   }
 
   h1 {
@@ -213,6 +242,12 @@
 
   .days {
     display: flex;
+  }
+
+  .day-wrapper {
+    flex-basis: calc(100% / 5);
+    flex-shrink: 0;
+    flex-direction: column;
   }
 
   .slide {

@@ -19,19 +19,19 @@
     <img class="logo" src={logo} alt="Logo" />
     <ul>
       <li>
-        <a href="#registrering">Registrering</a>
+        <a href="#oversikt">Oversikt</a>
       </li>
       <li>
-        <a href="#oversikt">Oversikt</a>
+        <a href="#registrering">Registrering</a>
       </li>
     </ul>
   </div>
   <QueryClientProvider client={queryClient}>
     <div class="content-root">
-      {#if page === "#oversikt"}
-        <Summary />
-      {:else}
+      {#if page === "#registrering"}
         <Picker />
+      {:else}
+        <Summary />
       {/if}
     </div>
   </QueryClientProvider>

@@ -54,7 +54,6 @@
 
 <style>
   .day {
-    aspect-ratio: 1;
     background-color: #efefef;
     padding: 1rem;
     border: 1px solid #999;
@@ -64,6 +63,8 @@
     justify-content: flex-start;
     align-items: flex-start;
     flex-basis: 20%;
+    max-width: 20%;
+    overflow-x: hidden;
     flex-shrink: 0;
   }
 

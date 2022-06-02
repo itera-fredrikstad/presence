@@ -1,5 +1,5 @@
 import axios from "axios";
-import { formatISO, parseJSON } from "date-fns";
+import { formatISO, parse, parseISO, parseJSON } from "date-fns";
 import type { DayAtWork, DayAtWorkType, DaySummary, Identifiable } from "./models";
 import { getDayId, map } from "./utils";
 
@@ -39,4 +39,21 @@ export async function getDayAtWorkItems(day: Date): Promise<DayAtWork[]> {
 
 
   return res.data.attendees
+}
+
+export type PublicHolidayDto = {
+  date: string;
+  localName: string;
+};
+
+export type PublicHoliday = {
+  date: Date;
+  name: string;
+};
+
+export type PublicHolidayMap = {[id: string]: PublicHoliday};
+
+export async function getPublicHolidays(year: string): Promise<any> {
+  const res = await axios.get<PublicHolidayDto[]>(`https://date.nager.at/api/v3/PublicHolidays/${year}/NO`);
+  return res.data.reduce<PublicHolidayMap>((p, n) => ({...p, ...map(parse(n.date, "yyyy-MM-dd", new Date()), d => ({ [getDayId(d)]: { name: n.localName, date: d }}))}), {});
 }
