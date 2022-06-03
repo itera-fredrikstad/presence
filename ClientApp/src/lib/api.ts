@@ -53,7 +53,36 @@ export type PublicHoliday = {
 
 export type PublicHolidayMap = {[id: string]: PublicHoliday};
 
-export async function getPublicHolidays(year: string): Promise<any> {
+export async function getPublicHolidays(year: string): Promise<PublicHolidayMap> {
   const res = await axios.get<PublicHolidayDto[]>(`https://date.nager.at/api/v3/PublicHolidays/${year}/NO`);
-  return res.data.reduce<PublicHolidayMap>((p, n) => ({...p, ...map(parse(n.date, "yyyy-MM-dd", new Date()), d => ({ [getDayId(d)]: { name: n.localName, date: d }}))}), {});
+  return res.data.reduce<PublicHolidayMap>((p, n) => ({
+    ...p, 
+    ...map(parse(n.date, "yyyy-MM-dd", new Date()), d => ({ [getDayId(d)]: { name: n.localName, date: d }}))}), {});
+}
+
+export type TeamEventDto = {
+  name: string;
+  start: string;
+  end: string;
+};
+
+export type TeamEvent = {
+  name: string;
+  start: Date;
+  end: Date;
+};
+
+export type TeamEventMap = {[id: string]: TeamEvent[]};
+
+export async function getTeamEvents(): Promise<TeamEventMap> {
+  const res = await axios.get<TeamEventDto[]>(`api/teamEvents`);
+  return res.data.reduce<TeamEventMap>((p, n) => ({
+    ...p,
+    ...map(parseJSON(n.start), start => map(parseJSON(n.end), end => map(getDayId(start), id => ({
+      [id]: [
+        ...(p[id] ? p[id] : []),
+        { name: n.name, start: start, end: end }
+      ]
+    }))))
+  }), {});
 }

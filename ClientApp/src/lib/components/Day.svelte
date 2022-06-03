@@ -4,11 +4,12 @@
   import { nb } from "date-fns/locale";
   
   import type { Identifiable, DayAtWork, DayAtWorkType } from "../models";
-import type { PublicHoliday } from "../api";
+import type { PublicHoliday, TeamEvent } from "../api";
 
   export let day: Date;
   export let dayAtWork: (Identifiable<DayAtWork> | undefined) = null;
   export let publicHoliday: PublicHoliday | undefined = null;
+  export let teamEvents: TeamEvent[] | undefined = [];
   export let onUpdate: (dayAtWork: Partial<DayAtWork>) => void;
 
   let editComment: boolean;
@@ -105,6 +106,9 @@ import type { PublicHoliday } from "../api";
   {#if !!publicHoliday}
     <h3>{publicHoliday.name}</h3>
   {/if}
+  {#each teamEvents as teamEvent}
+    <h3>{(teamEvent.name.toLowerCase().indexOf("pils") !== -1 ? ("🍻" + teamEvent.name) : teamEvent.name)} ({format(teamEvent.start, "HH:mm")}-{format(teamEvent.end, "HH:mm")})</h3>
+  {/each}
   <textarea 
     bind:this="{commentField}"
     bind:value="{comment}" 
