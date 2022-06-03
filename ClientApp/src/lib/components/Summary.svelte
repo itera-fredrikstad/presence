@@ -15,10 +15,8 @@
   let today = new Date();
   let offset = 0;
 
-  let firstDayOfMonth = new Date(today.getFullYear(), today.getMonth());
-
   $: allDays = eachDayOfInterval({
-    start: firstDayOfMonth,
+    start: today,
     end: addWeeks(today, offset + 2),
   });
   $: workDays = allDays;
