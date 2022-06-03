@@ -15,11 +15,13 @@
   let today = new Date();
   let offset = 0;
 
+  let firstDayOfMonth = new Date(today.getFullYear(), today.getMonth());
+
   $: allDays = eachDayOfInterval({
-    start: today,
+    start: firstDayOfMonth,
     end: addWeeks(today, offset + 2),
   });
-  $: workDays = allDays.filter((day) => !isSaturday(day) && !isSunday(day));
+  $: workDays = allDays;
   $: currentWindow = workDays.slice(offset * 5, (offset + 1) * 5);
   $: weeks = Object.keys(
     currentWindow.reduce((prev, next) => ({ ...prev, [getISOWeek(next)]: true }), {})
