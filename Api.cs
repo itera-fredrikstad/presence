@@ -18,7 +18,7 @@ public static class Api
         app.MapGet("api/daySummary", GetDaySummary);
         app.MapGet("api/dayAtWork/{userId}", Get);
         app.MapPut("api/dayAtWork", Update);
-        app.MapGet("api/events", GetEvents);
+        app.MapGet("api/teamEvents", GetEvents);
     }
 
     private static async Task<Ok<List<DayAtWork>>> Get(string userId, [FromServices] Db db) => 
@@ -44,11 +44,11 @@ public static class Api
         var events = calendar.Events.Select(e => new TeamEvent(e.Summary, e.Start.AsDateTimeOffset,
             e.End.AsDateTimeOffset, e.Attendees.Where(a => a.ParticipationStatus == "ACCEPTED").Select(a => a.CommonName ?? a.Value.ToString()).ToList())).ToList();
         
-        return Results.Extensions.Ok(events);
+        return Results.Extensions.Ok(events.OrderBy(e => e.Start).ToList());
     }
 }
 
-public record TeamEvent(string EventName, DateTimeOffset Start, DateTimeOffset End, List<string> Attendees);
+public record TeamEvent(string Name, DateTimeOffset Start, DateTimeOffset End, List<string> Attendees);
 
 public record DayAtWork(
     string UserId,

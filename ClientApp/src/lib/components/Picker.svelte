@@ -14,7 +14,7 @@
   } from "date-fns";
   import { nb } from "date-fns/locale";
   import Select from "svelte-select";
-  import { getDayAtWorkItemsForUser, getPublicHolidays } from "../api";
+  import { getDayAtWorkItemsForUser, getPublicHolidays, getTeamEvents } from "../api";
   import Day from "./Day.svelte";
   import type { DayAtWork, Identifiable } from "../models";
   import { users } from "../users";
@@ -52,6 +52,8 @@
   $: query =
     userId &&
     useQuery(["dayAtWorks", userId], () => getDayAtWorkItemsForUser(userId));
+
+  const teamEventsQuery = useQuery("teamEvents", () => getTeamEvents());
 
   function handleNext() {
     offset++;
@@ -180,11 +182,13 @@
             {@const dayId = getDayId(day)}
             {@const dayAtWork = $query?.data?.[dayId]}
             {@const publicHoliday = $holidayQuery?.data?.[dayId]}
+            {@const teamEvents = $teamEventsQuery?.data?.[dayId] ?? []}
             <div class="day-wrapper">
               <Day
                 {day}
                 {dayAtWork}
                 {publicHoliday}
+                {teamEvents}
                 onUpdate={(updated) => handleUpdate(day, dayAtWork, updated)}
               />
             </div>
