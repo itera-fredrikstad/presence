@@ -18,6 +18,7 @@
     <PackageReference Include="Ardalis.SmartEnum.EFCore" Version="2.1.0" />
     <PackageReference Include="Ardalis.SmartEnum.SystemTextJson" Version="2.1.0" />
     <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="Ical.Net" Version="4.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.5" />

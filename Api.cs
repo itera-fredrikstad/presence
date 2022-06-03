@@ -1,5 +1,7 @@
+using System.Net;
 using System.Runtime.InteropServices.ComTypes;
 using Ardalis.SmartEnum;
+using Ical.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MinimalApis.Extensions.Results;
@@ -16,6 +18,7 @@ public static class Api
         app.MapGet("api/daySummary", GetDaySummary);
         app.MapGet("api/dayAtWork/{userId}", Get);
         app.MapPut("api/dayAtWork", Update);
+        app.MapGet("api/events", GetEvents);
     }
 
     private static async Task<Ok<List<DayAtWork>>> Get(string userId, [FromServices] Db db) => 
@@ -34,7 +37,18 @@ public static class Api
         
         return Results.Extensions.Ok();
     }
+
+    private static async Task<Ok<List<TeamEvent>>> GetEvents([FromServices] IConfiguration config)
+    {
+        var calendar = Calendar.Load(new WebClient().DownloadString(config.GetValue<string>("CAL_URL")));
+        var events = calendar.Events.Select(e => new TeamEvent(e.Summary, e.Start.AsDateTimeOffset,
+            e.End.AsDateTimeOffset, e.Attendees.Where(a => a.ParticipationStatus == "ACCEPTED").Select(a => a.CommonName ?? a.Value.ToString()).ToList())).ToList();
+        
+        return Results.Extensions.Ok(events);
+    }
 }
+
+public record TeamEvent(string EventName, DateTimeOffset Start, DateTimeOffset End, List<string> Attendees);
 
 public record DayAtWork(
     string UserId,
