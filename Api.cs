@@ -26,7 +26,7 @@ public static class Api
 
     private static async Task<Ok<DaySummary>> GetDaySummary([FromQuery]DateTime date, [FromServices] Db db)
     {
-        var attendees = await db.DayAtWorks.AsNoTracking().Where(d => d.Date >= date && d.Date < date.AddDays(1) && d.Type != DayType.Empty).ToListAsync();
+        var attendees = await db.DayAtWorks.AsNoTracking().Where(d => d.Date >= date && d.Date < date.AddDays(1)).ToListAsync();
         return Results.Extensions.Ok(new DaySummary(date, attendees.Select(a => new DayAttendee(a.UserId, a.Type, a.Comment)).ToList()));
     }
 

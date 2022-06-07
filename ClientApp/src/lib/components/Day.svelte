@@ -4,7 +4,7 @@
   import { nb } from "date-fns/locale";
   
   import type { Identifiable, DayAtWork, DayAtWorkType } from "../models";
-import type { PublicHoliday, TeamEvent } from "../api";
+  import type { PublicHoliday, TeamEvent } from "../api";
 
   export let day: Date;
   export let dayAtWork: (Identifiable<DayAtWork> | undefined) = null;
@@ -219,6 +219,7 @@ import type { PublicHoliday, TeamEvent } from "../api";
     font-size: 1rem;
     background-color: #efefef;
     padding: 0.2rem 0.5rem;
+    width: fit-content;
   }
 
   .day h2 {
@@ -226,6 +227,7 @@ import type { PublicHoliday, TeamEvent } from "../api";
     font-size: 1.2rem;
     background-color: #efefef;
     padding: 0.2rem 0.5rem;
+    width: fit-content;
   }
 
   .day h3 {
@@ -234,5 +236,6 @@ import type { PublicHoliday, TeamEvent } from "../api";
     background-color: #efefef;
     padding: 0.2rem 0.5rem;
     text-transform: uppercase;
+    width: fit-content;
   }
 </style>

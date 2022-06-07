@@ -1,12 +1,13 @@
 <script lang="ts">
-  import { afterUpdate } from "svelte";
   import { format, isFirstDayOfMonth } from "date-fns";
   import { nb } from "date-fns/locale";
 
-  import type { Identifiable, DayAtWork, DayAtWorkType } from "../models";
   import { useQuery } from "@sveltestack/svelte-query";
   import { getDayAtWorkItems } from "../api";
   import { users } from "../users";
+  import Attendee from "./Attendee.svelte";
+  import Avatar from "./Avatar.svelte";
+  import type { DayAtWork } from "../models";
 
   export let day: Date;
 
@@ -31,9 +32,13 @@
   function isEmpty(dayAtWork: DayAtWork): boolean {
     return isSelected(dayAtWork) && dayAtWork.type == "EMPTY";
   }
+
+  function hasComment(dayAtWork: DayAtWork): boolean {
+    return !!dayAtWork.comment;
+  }
 </script>
 
-<div class="day">
+<div class="day" class:loading={$query.isLoading}>
   <h1>
     {format(day, "d", { locale: nb })}
     {#if isFirstDayOfMonth(day)}
@@ -41,7 +46,7 @@
     {/if}
   </h1>
   <h2>{format(day, "eeee", { locale: nb })}</h2>
-  {#each $query?.data ?? [] as attendee}
+  {#each $query?.data?.filter((attendee) => !isEmpty(attendee) || hasComment(attendee)) ?? [] as attendee}
     <div
       class:selected={isSelected(attendee) && !isEmpty(attendee)}
       class:first-half={isFirstHalf(attendee)}
@@ -49,8 +54,17 @@
       class="attendee"
     >
       <p>{users[attendee.userId]}</p>
+      {#if attendee.comment}
+        <p class="comment">{attendee.comment}</p>
+      {/if}
     </div>
   {/each}
+  <!-- <div class="attendees"> -->
+  <!-- {#each $query?.data ?? [] as attendee} -->
+  <!-- <Attendee {attendee} /> -->
+  <!-- <Avatar {attendee} /> -->
+  <!-- {/each} -->
+  <!-- </div> -->
 </div>
 
 <style>
@@ -70,37 +84,6 @@
 
   .day:hover {
     background-color: #eaeaea;
-  }
-
-  .attendee {
-    margin: 0.5rem 0;
-    width: 100%;
-  }
-
-  .attendee.selected {
-    background: repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #ffcccb 5px, #ffcccb 10px);
-  }
-
-  .attendee.selected.first-half {
-    background: linear-gradient(
-        to left,
-        rgba(238, 238, 238, 1) 0%,
-        rgba(238, 238, 238, 1) 50%,
-        rgba(238, 238, 238, 0) 50%,
-        rgba(238, 238, 238, 0) 100%
-      ),
-      repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #ffcccb 5px, #ffcccb 10px);
-  }
-
-  .attendee.selected.last-half {
-    background: linear-gradient(
-        to right,
-        rgba(238, 238, 238, 1) 0%,
-        rgba(238, 238, 238, 1) 50%,
-        rgba(238, 238, 238, 0) 50%,
-        rgba(238, 238, 238, 0) 100%
-      ),
-      repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #ffcccb 5px, #ffcccb 10px);
   }
 
   .day h1 {
@@ -126,5 +109,44 @@
     max-width: 100%;
     text-overflow: ellipsis;
     overflow: hidden;
+  }
+
+  .comment {
+    font-size: 0.8rem;
+    font-weight: 300;
+    white-space: pre-wrap;
+  }
+  .attendee {
+    margin: 0.5rem 0;
+    width: 100%;
+    border: 1px solid #ffcccb;
+  }
+  .attendee.selected {
+    background: repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #ffcccb 5px, #ffcccb 10px);
+  }
+  .attendee.selected.first-half {
+    background: linear-gradient(
+        to left,
+        rgba(238, 238, 238, 1) 0%,
+        rgba(238, 238, 238, 1) 50%,
+        rgba(238, 238, 238, 0) 50%,
+        rgba(238, 238, 238, 0) 100%
+      ),
+      repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #ffcccb 5px, #ffcccb 10px);
+  }
+  .attendee.selected.last-half {
+    background: linear-gradient(
+        to right,
+        rgba(238, 238, 238, 1) 0%,
+        rgba(238, 238, 238, 1) 50%,
+        rgba(238, 238, 238, 0) 50%,
+        rgba(238, 238, 238, 0) 100%
+      ),
+      repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #ffcccb 5px, #ffcccb 10px);
+  }
+  .attendees {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 12px;
   }
 </style>
