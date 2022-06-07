@@ -41,10 +41,13 @@ public static class Api
     private static async Task<Ok<List<TeamEvent>>> GetEvents([FromServices] IConfiguration config)
     {
         var calendar = Calendar.Load(new WebClient().DownloadString(config.GetValue<string>("CAL_URL")));
-        var events = calendar.Events.Select(e => new TeamEvent(e.Summary, e.Start.AsDateTimeOffset,
-            e.End.AsDateTimeOffset, e.Attendees.Where(a => a.ParticipationStatus == "ACCEPTED").Select(a => a.CommonName ?? a.Value.ToString()).ToList())).ToList();
         
-        return Results.Extensions.Ok(events.OrderBy(e => e.Start).ToList());
+        var events = calendar.Events.SelectMany(e => e
+            .GetOccurrences(DateTime.Today, DateTime.Today.AddYears(1))
+            .Select(o => new TeamEvent(e.Summary, o.Period.StartTime.AsDateTimeOffset, o.Period.EndTime.AsDateTimeOffset, new ())))
+            .OrderBy(e => e.Start);
+        
+        return Results.Extensions.Ok(events.ToList());
     }
 }
 
