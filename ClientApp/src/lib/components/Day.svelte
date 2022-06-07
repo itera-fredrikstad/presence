@@ -4,7 +4,7 @@
   import { nb } from "date-fns/locale";
   
   import type { Identifiable, DayAtWork, DayAtWorkType } from "../models";
-import type { PublicHoliday, TeamEvent } from "../api";
+  import type { PublicHoliday, TeamEvent } from "../api";
 
   export let day: Date;
   export let dayAtWork: (Identifiable<DayAtWork> | undefined) = null;
