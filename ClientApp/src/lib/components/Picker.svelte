@@ -1,17 +1,6 @@
 <script lang="ts">
-  import {
-    useQuery,
-    useMutation,
-    useQueryClient,
-  } from "@sveltestack/svelte-query";
-  import {
-    addWeeks,
-    getMonth,
-    format,
-    eachDayOfInterval,
-    getISOWeek,
-    formatISO,
-  } from "date-fns";
+  import { useQuery, useMutation, useQueryClient } from "@sveltestack/svelte-query";
+  import { addWeeks, getMonth, format, eachDayOfInterval, getISOWeek, formatISO } from "date-fns";
   import { nb } from "date-fns/locale";
   import Select from "svelte-select";
   import { getDayAtWorkItemsForUser, getPublicHolidays, getTeamEvents } from "../api";
@@ -21,8 +10,6 @@
   import { getDayId } from "../utils";
 
   const queryClient = useQueryClient();
-
-  let userId: string = null;
 
   let today = new Date();
   let offset = 0;
@@ -35,10 +22,7 @@
   $: workDays = allDays;
   $: currentWindow = workDays.slice(offset * numDays, (offset + 1) * numDays);
   $: weeks = Object.keys(
-    currentWindow.reduce(
-      (prev, next) => ({ ...prev, [getISOWeek(next)]: true }),
-      {}
-    )
+    currentWindow.reduce((prev, next) => ({ ...prev, [getISOWeek(next)]: true }), {})
   );
   $: months = currentWindow.reduce<{ [key: string]: Date }>(
     (prev, next) => ({ ...prev, [getMonth(next)]: next }),
@@ -46,12 +30,12 @@
   );
   $: currentYear = format(currentWindow[0], "yyyy");
 
-  $: holidayQuery = useQuery(["publicHolidays", currentYear], () =>
-    getPublicHolidays(currentYear)
-  );
-  $: query =
-    userId &&
-    useQuery(["dayAtWorks", userId], () => getDayAtWorkItemsForUser(userId));
+  $: holidayQuery = useQuery(["publicHolidays", currentYear], () => getPublicHolidays(currentYear));
+  $: query = useQuery(["dayAtWorks"], () => getDayAtWorkItemsForUser());
+
+  $: userId = $query?.data?.userId ?? "";
+  $: name = $query?.data?.name ?? "";
+  name = name;
 
   const teamEventsQuery = useQuery("teamEvents", () => getTeamEvents());
 
@@ -84,42 +68,33 @@
     return response.bodyUsed ? response.json() : {}; // parses JSON response into native JavaScript objects
   }
 
-  const mutation = useMutation(
-    (newDayAtWork: any) => postData("api/dayAtWork", newDayAtWork),
-    {
-      // When mutate is called:
-      onMutate: async (newTodo) => {
-        // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-        await queryClient.cancelQueries(["dayAtWorks", newTodo.userId]);
+  const mutation = useMutation((newDayAtWork: any) => postData("api/dayAtWork", newDayAtWork), {
+    // When mutate is called:
+    onMutate: async (newTodo) => {
+      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries(["dayAtWorks", newTodo.userId]);
 
-        // Snapshot the previous value
-        const previousTodos = queryClient.getQueryData([
-          "dayAtWorks",
-          newTodo.userId,
-        ]);
+      // Snapshot the previous value
+      const previousTodos = queryClient.getQueryData(["dayAtWorks", newTodo.userId]);
 
-        // Optimistically update to the new value
-        queryClient.setQueryData(["dayAtWorks", newTodo.userId], (old: {}) => ({
-          ...old,
-          [newTodo.id]: newTodo,
-        }));
+      // Optimistically update to the new value
+      queryClient.setQueryData(["dayAtWorks", newTodo.userId], (old: {}) => ({
+        ...old,
+        [newTodo.id]: newTodo,
+      }));
 
-        // Return a context object with the snapshotted value
-        return { previousTodos };
-      },
-      // If the mutation fails, use the context returned from onMutate to roll back
-      onError: (err, newTodo, context: any) => {
-        queryClient.setQueryData(
-          ["dayAtWorks", newTodo.userId],
-          context.previousTodos
-        );
-      },
-      // Always refetch after error or success:
-      onSettled: () => {
-        queryClient.invalidateQueries(["dayAtWorks"]);
-      },
-    }
-  );
+      // Return a context object with the snapshotted value
+      return { previousTodos };
+    },
+    // If the mutation fails, use the context returned from onMutate to roll back
+    onError: (err, newTodo, context: any) => {
+      queryClient.setQueryData(["dayAtWorks", newTodo.userId], context.previousTodos);
+    },
+    // Always refetch after error or success:
+    onSettled: () => {
+      queryClient.invalidateQueries(["dayAtWorks"]);
+    },
+  });
 
   function createDayAtWork(date: Date): Identifiable<DayAtWork> {
     return {
@@ -157,46 +132,38 @@
         .map((d) => format(d, "MMMM", { locale: nb }))
         .join("/")})
     </h2>
-    <div class="select-container">
-      <Select 
-        items={Object.keys(users).map(u => ({ value: u, label: users[u] }))} 
-        placeholder="Velg bruker" 
-        showChevron={true}
-        on:select="{handleSelectUser}" />
+    <div class="name-container">
+      <p>{name}</p>
     </div>
   </div>
-  {#if !userId}
-    <h3>Velg en bruker i nedtrekkslisten.</h3>
-  {:else}
-    <div class="wrapper">
-      {#if offset > 0}
-        <i class="fa-solid fa-circle-arrow-left" on:click={handlePrev} />
-      {/if}
-      <i class="fa-solid fa-circle-arrow-right" on:click={handleNext} />
-      <div class="window">
-        <div
-          class="days slide"
-          style="transform: translateX({offset * -100}%); transform-origin: 0 0"
-        >
-          {#each workDays as day}
-            {@const dayId = getDayId(day)}
-            {@const dayAtWork = $query?.data?.[dayId]}
-            {@const publicHoliday = $holidayQuery?.data?.[dayId]}
-            {@const teamEvents = $teamEventsQuery?.data?.[dayId] ?? []}
-            <div class="day-wrapper">
-              <Day
-                {day}
-                {dayAtWork}
-                {publicHoliday}
-                {teamEvents}
-                onUpdate={(updated) => handleUpdate(day, dayAtWork, updated)}
-              />
-            </div>
-          {/each}
-        </div>
+  <div class="wrapper">
+    {#if offset > 0}
+      <i class="fa-solid fa-circle-arrow-left" on:click={handlePrev} />
+    {/if}
+    <i class="fa-solid fa-circle-arrow-right" on:click={handleNext} />
+    <div class="window">
+      <div
+        class="days slide"
+        style="transform: translateX({offset * -100}%); transform-origin: 0 0"
+      >
+        {#each workDays as day}
+          {@const dayId = getDayId(day)}
+          {@const dayAtWork = $query?.data?.days[dayId]}
+          {@const publicHoliday = $holidayQuery?.data?.[dayId]}
+          {@const teamEvents = $teamEventsQuery?.data?.[dayId] ?? []}
+          <div class="day-wrapper">
+            <Day
+              {day}
+              {dayAtWork}
+              {publicHoliday}
+              {teamEvents}
+              onUpdate={(updated) => handleUpdate(day, dayAtWork, updated)}
+            />
+          </div>
+        {/each}
       </div>
     </div>
-  {/if}
+  </div>
 </div>
 
 <style>
@@ -208,11 +175,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-  }
-
-  .select-container {
-    --border: none;
-    width: 30%;
   }
 
   h1 {
