@@ -2,7 +2,7 @@
 
 namespace Itera.Fredrikstad.Presence.Infrastructure;
 
-public static class UpsertExtensions
+public static class DbContextExtensions
 {
     public static async Task AddOrUpdate<TEntity>(this DbContext db, TEntity entity, Func<TEntity, object[]> keySelector) where TEntity : class
     {

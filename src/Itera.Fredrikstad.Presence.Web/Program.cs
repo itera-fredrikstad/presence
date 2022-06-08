@@ -21,7 +21,7 @@ builder.Services.Configure<JsonOptions>(opts =>
     opts.SerializerOptions.Converters.Add(new SmartEnumNameConverter<DayType, int>());
 });
 
-builder.Services.AddDbContext<Db>((provider, opt) => opt.UseSqlServer(provider.GetService<IConfiguration>().GetConnectionString("Sql"), sql => sql.EnableRetryOnFailure()));
+builder.Services.AddDbContext(builder.Configuration.GetConnectionString("Sql"));
 
 builder.Services.Configure<CookiePolicyOptions>(options =>
 {
@@ -43,7 +43,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<Db>();
+    var context = services.GetRequiredService<PresenceDbContext>();
     context.Database.EnsureCreated();
 }
 

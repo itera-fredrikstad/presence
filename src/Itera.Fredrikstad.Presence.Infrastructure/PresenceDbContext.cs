@@ -4,11 +4,11 @@ using SmartEnum.EFCore;
 
 namespace Itera.Fredrikstad.Presence.Infrastructure;
 
-public class Db : DbContext
+public class PresenceDbContext : DbContext
 {
     public DbSet<DayAtWork> DayAtWorks{ get; set; }
 
-    public Db(DbContextOptions<Db> opts) : base(opts) { }
+    public PresenceDbContext(DbContextOptions<PresenceDbContext> opts) : base(opts) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -5,9 +5,9 @@ namespace Itera.Fredrikstad.Presence.Infrastructure;
 
 public class DayAtWorkSqlRepository : IDayAtWorkRepository
 {
-    private readonly Db _db;
+    private readonly PresenceDbContext _db;
 
-    public DayAtWorkSqlRepository(Db db)
+    public DayAtWorkSqlRepository(PresenceDbContext db)
     {
         _db = db;
     }
