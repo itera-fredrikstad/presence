@@ -1,6 +1,8 @@
 using System.Net;
 using Ardalis.SmartEnum.SystemTextJson;
-using Itera.Fredrikstad.Presence;
+using Itera.Fredrikstad.Presence.Api;
+using Itera.Fredrikstad.Presence.Core;
+using Itera.Fredrikstad.Presence.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +37,7 @@ builder.Services.AddAuthorization(options =>
         .RequireAuthenticatedUser().Build();
 });
 
+builder.Services.AddTransient<IDayAtWorkRepository, DayAtWorkSqlRepository>();
 
 var app = builder.Build();
 

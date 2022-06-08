@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -15,14 +15,10 @@
 
   <ItemGroup>
     <PackageReference Include="Ardalis.SmartEnum" Version="2.1.0" />
-    <PackageReference Include="Ardalis.SmartEnum.EFCore" Version="2.1.0" />
     <PackageReference Include="Ardalis.SmartEnum.SystemTextJson" Version="2.1.0" />
-    <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="Ical.Net" Version="4.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.5" />
     <PackageReference Include="Microsoft.Identity.Web" Version="1.25.0" />
     <PackageReference Include="MinimalApis.Extensions" Version="0.5.2-pre.20220322.22" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
@@ -33,6 +29,11 @@
     <Content Remove="$(SpaRoot)**" />
     <None Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Itera.Fredrikstad.Presence.Core\Itera.Fredrikstad.Presence.Core.csproj" />
+    <ProjectReference Include="..\Itera.Fredrikstad.Presence.Infrastructure\Itera.Fredrikstad.Presence.Infrastructure.csproj" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
