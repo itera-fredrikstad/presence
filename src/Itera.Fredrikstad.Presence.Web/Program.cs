@@ -23,7 +23,6 @@ builder.Services.Configure<JsonOptions>(opts =>
 
 builder.Services.AddDbContext<Db>((provider, opt) => opt.UseSqlServer(provider.GetService<IConfiguration>().GetConnectionString("Sql"), sql => sql.EnableRetryOnFailure()));
 
-
 builder.Services.Configure<CookiePolicyOptions>(options =>
 {
     options.Secure = CookieSecurePolicy.Always;
