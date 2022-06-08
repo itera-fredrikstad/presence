@@ -25,7 +25,6 @@ public static class Api
         app.MapGet("api/teamEvents", GetEvents);
     }
 
-    [Authorize]
     private static async Task<Ok<Employee>> Get(HttpContext context, [FromServices] Db db)
     {
         var user = context.User.Identity?.Name ?? "";
@@ -34,13 +33,13 @@ public static class Api
         return Results.Extensions.Ok(new Employee(user, name, days));
     }
 
+    [AllowAnonymous]
     private static async Task<Ok<DaySummary>> GetDaySummary([FromQuery] DateTime date, [FromServices] Db db)
     {
         var attendees = await db.DayAtWorks.AsNoTracking().Where(d => d.Date >= date && d.Date < date.AddDays(1)).ToListAsync();
         return Results.Extensions.Ok(new DaySummary(date, attendees.Select(a => new DayAttendee(a.UserId, a.Type, a.Comment)).ToList()));
     }
 
-    [Authorize]
     private static async Task<Ok> Update([FromBody] DayAtWork dayAtWork, [FromServices] Db db)
     {
         await db.AddOrUpdate(dayAtWork, d => new object[] { d.UserId, d.Date });
@@ -50,7 +49,6 @@ public static class Api
     }
 
 
-    [Authorize]
     private static async Task<Ok<List<TeamEvent>>> GetEvents([FromServices] IConfiguration config)
     {
         var calendar = Calendar.Load(new WebClient().DownloadString(config.GetValue<string>("CAL_URL")));
