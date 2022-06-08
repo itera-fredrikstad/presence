@@ -29,4 +29,10 @@ public class DayAtWorkSqlRepository : IDayAtWorkRepository
 
         return dayAtWork;
     }
+
+    public async Task Update(DayAtWork dayAtWork)
+    {
+        await _db.AddOrUpdate(dayAtWork, d => new object[] { d.UserId, d.Date });
+        await _db.SaveChangesAsync();
+    }
 }

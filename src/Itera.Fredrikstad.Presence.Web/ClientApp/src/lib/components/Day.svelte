@@ -5,6 +5,7 @@
   
   import type { Identifiable, DayAtWork, DayAtWorkType } from "../models";
   import type { PublicHoliday, TeamEvent } from "../api";
+  import { emphasizeEmojis } from "../utils";
 
   export let day: Date;
   export let dayAtWork: (Identifiable<DayAtWork> | undefined) = null;
@@ -85,6 +86,16 @@
   function isNonWorkingDay(day: Date) {
     return isSaturday(day) || isSunday(day);
   }
+
+  const beerTriggers = [
+    "pils",
+    "fest",
+    "øl"
+  ];
+
+  function isBeerEvent(eventName: string) {
+    return beerTriggers.filter(t => eventName.toLowerCase().includes(t)).length > 0;
+  }
 </script>
 
 <div
@@ -107,15 +118,21 @@
     <h3>{publicHoliday.name}</h3>
   {/if}
   {#each teamEvents as teamEvent}
-    <h3>{(teamEvent.name.toLowerCase().indexOf("pils") !== -1 ? ("🍻" + teamEvent.name) : teamEvent.name)} ({format(teamEvent.start, "HH:mm")}-{format(teamEvent.end, "HH:mm")})</h3>
+  {@const eventName = isBeerEvent(teamEvent.name) ? ("🍻" + teamEvent.name) : teamEvent.name}
+    <h3>{@html emphasizeEmojis(eventName)} ({format(teamEvent.start, "HH:mm")}-{format(teamEvent.end, "HH:mm")})</h3>
   {/each}
-  <textarea 
-    bind:this="{commentField}"
-    bind:value="{comment}" 
-    readonly={!editComment}
-    class="inactive"
-    class:hide="{!comment && !editComment}"
-    on:blur="{handleUpdateComment}"/>
+  {#if editComment}
+    <textarea 
+      bind:this="{commentField}"
+      bind:value="{comment}"
+      class="inactive"
+      class:hide="{!comment && !editComment}"
+      on:blur="{handleUpdateComment}"/>
+    {:else if comment}
+      <p class="comment">
+        {@html emphasizeEmojis(comment || "")}
+      </p>
+    {/if}
 </div>
 
 <style>
@@ -143,19 +160,6 @@
 
   .day:hover {
     background-color: #eaeaea;
-  }
-
-  .day textarea {
-    border: none;
-    background: #efefef;
-    padding: 0.2rem 0.5rem;
-    width: 100%;
-    margin: 0;
-    font-size: 0.8rem;
-    resize: none;
-    overflow: hidden;
-    cursor: default;
-    flex-grow: 100;
   }
 
   .day textarea:focus {
@@ -237,5 +241,39 @@
     padding: 0.2rem 0.5rem;
     text-transform: uppercase;
     width: fit-content;
+  }
+
+  h3 > :global(.emoji) {
+    font-size: 1rem;
+  }
+
+  .day textarea {
+    border: none;
+    background: #efefef;
+    padding: 0.2rem 0.5rem;
+    width: 100%;
+    margin: 0;
+    font-size: 0.8rem;
+    resize: none;
+    overflow: hidden;
+    cursor: default;
+    flex-grow: 100;
+  }
+
+  .comment {
+    background: #efefef;
+    padding: 0.2rem 0.5rem;
+    margin: 0;
+    font-size: 0.8rem;
+    resize: none;
+    overflow: hidden;
+    cursor: default;
+    width: fit-content;
+    font-weight: 300;
+    white-space: pre-wrap;
+  }
+
+  .comment > :global(.emoji) {
+    font-size: 1.2rem;
   }
 </style>

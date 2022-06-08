@@ -1,9 +1,12 @@
+using System.Net;
 using Ardalis.SmartEnum.SystemTextJson;
 using Itera.Fredrikstad.Presence.Api;
 using Itera.Fredrikstad.Presence.Core;
 using Itera.Fredrikstad.Presence.Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +23,21 @@ builder.Services.Configure<JsonOptions>(opts =>
 
 builder.Services.AddDbContext<Db>((provider, opt) => opt.UseSqlServer(provider.GetService<IConfiguration>().GetConnectionString("Sql"), sql => sql.EnableRetryOnFailure()));
 
+
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.Secure = CookieSecurePolicy.Always;
+});
+
+builder.Services.AddMicrosoftIdentityWebAppAuthentication(builder.Configuration);
+
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser().Build();
+});
+
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -29,22 +47,26 @@ using (var scope = app.Services.CreateScope())
     context.Database.EnsureCreated();
 }
 
-app.UseCors(opts => {
+app.UseCors(opts =>
+{
     opts.AllowAnyOrigin();
     opts.AllowAnyMethod();
     opts.AllowAnyHeader();
 });
 
-app.UseSwagger();
-app.UseSwaggerUI();
+app.UseCookiePolicy();
 
-if(!app.Environment.IsDevelopment())
+if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
 
+app.UseAuthentication();
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseAuthorization();
 
 app.MapApi();
 app.MapFallbackToFile("index.html");

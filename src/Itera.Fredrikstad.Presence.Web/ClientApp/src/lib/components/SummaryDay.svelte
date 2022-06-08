@@ -8,6 +8,7 @@
   import Attendee from "./Attendee.svelte";
   import Avatar from "./Avatar.svelte";
   import type { DayAtWork } from "../models";
+import { emphasizeEmojis } from "../utils";
 
   export let day: Date;
 
@@ -55,7 +56,7 @@
     >
       <p>{users[attendee.userId]}</p>
       {#if attendee.comment}
-        <p class="comment">{attendee.comment}</p>
+        <p class="comment">{@html emphasizeEmojis(attendee.comment)}</p>
       {/if}
     </div>
   {/each}
@@ -116,6 +117,11 @@
     font-weight: 300;
     white-space: pre-wrap;
   }
+
+  .comment > :global(.emoji) {
+    font-size: 1.2rem;
+  }
+
   .attendee {
     margin: 0.5rem 0;
     width: 100%;
