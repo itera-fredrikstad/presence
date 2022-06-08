@@ -1,6 +1,7 @@
 using System.Net;
 using Ical.Net;
 using Itera.Fredrikstad.Presence.Core;
+using Itera.Fredrikstad.Presence.Web.Api;
 using Microsoft.AspNetCore.Mvc;
 using MinimalApis.Extensions.Results;
 
