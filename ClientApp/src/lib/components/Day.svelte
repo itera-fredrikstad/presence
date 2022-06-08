@@ -243,6 +243,10 @@
     width: fit-content;
   }
 
+  h3 > :global(.emoji) {
+    font-size: 1rem;
+  }
+
   .day textarea {
     border: none;
     background: #efefef;
