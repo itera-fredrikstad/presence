@@ -119,7 +119,7 @@ import { emphasizeEmojis } from "../utils";
   }
 
   .comment > :global(.emoji) {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
   }
 
   .attendee {
