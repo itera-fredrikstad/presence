@@ -37,6 +37,7 @@ builder.Services.AddAuthorization(options =>
         .RequireAuthenticatedUser().Build();
 });
 
+builder.Services.AddTransient<IDayAtWorkRepository, DayAtWorkSqlRepository>();
 
 var app = builder.Build();
 
