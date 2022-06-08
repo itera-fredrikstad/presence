@@ -34,7 +34,6 @@ public static class Api
         return Results.Extensions.Ok(new Employee(user, name, days));
     }
 
-    [Authorize]
     private static async Task<Ok<DaySummary>> GetDaySummary([FromQuery] DateTime date, [FromServices] Db db)
     {
         var attendees = await db.DayAtWorks.AsNoTracking().Where(d => d.Date >= date && d.Date < date.AddDays(1)).ToListAsync();
