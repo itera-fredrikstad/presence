@@ -5,9 +5,16 @@ VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Itera.Fredrikstad.Presence.Web", "src\Itera.Fredrikstad.Presence.Web\Itera.Fredrikstad.Presence.Web.csproj", "{4E15CE54-42A8-4751-BAEE-D17E3AAA798F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Itera.Fredrikstad.Presence.Infrastructure", "src\Itera.Fredrikstad.Presence.Infrastructure\Itera.Fredrikstad.Presence.Infrastructure.csproj", "{11C226E2-1D2C-4BAF-A85E-097AE5B78BEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Itera.Fredrikstad.Presence.Infrastructure", "src\Itera.Fredrikstad.Presence.Infrastructure\Itera.Fredrikstad.Presence.Infrastructure.csproj", "{11C226E2-1D2C-4BAF-A85E-097AE5B78BEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Itera.Fredrikstad.Presence.Core", "src\Itera.Fredrikstad.Presence.Core\Itera.Fredrikstad.Presence.Core.csproj", "{A2C6F699-5A82-4DA1-9C85-170C664CA6C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Itera.Fredrikstad.Presence.Core", "src\Itera.Fredrikstad.Presence.Core\Itera.Fredrikstad.Presence.Core.csproj", "{A2C6F699-5A82-4DA1-9C85-170C664CA6C7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1DC74096-341B-433D-94A8-A3BE56357F99}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		.github\workflows\main_presence-itera-fredrikstad.yml = .github\workflows\main_presence-itera-fredrikstad.yml
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
