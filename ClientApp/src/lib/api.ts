@@ -12,11 +12,24 @@ export type DayAtWorkDto = {
   comment?: string;
 };
 
-export async function getDayAtWorkItemsForUser(userId: string): Promise<DayAtWorkItemsMap> {
+export type EmployeeDto = {
+  userId: string;
+  name: string;
+  days: DayAtWorkDto[]
+};
+
+
+export type EmployeeWithDaysAtWorkMap = {
+  userId: string;
+  name: string;
+  days: DayAtWorkItemsMap
+};
+
+export async function getDayAtWorkItemsForUser(): Promise<EmployeeWithDaysAtWorkMap> {
   const res = await axios
-    .get<DayAtWorkDto[]>(`api/dayAtWork/${userId}`);
+    .get<EmployeeDto>(`api/dayAtWork`);
   
-  return res.data.reduce(
+  const days = res.data.days.reduce(
     (p, n) => ({
       ...p,
       ...(map(parseJSON(n.date), date => map(getDayId(date), id => ({
@@ -30,6 +43,8 @@ export async function getDayAtWorkItemsForUser(userId: string): Promise<DayAtWor
       }))))
     }),
     {} as DayAtWorkItemsMap);
+
+    return {name: res.data.name, userId: res.data.userId, days}
 }
 
 export async function getDayAtWorkItems(day: Date): Promise<DayAtWork[]> {

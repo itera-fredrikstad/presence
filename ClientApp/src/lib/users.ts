@@ -9,5 +9,5 @@ export const users = {
   "emilie.rosnaes@itera.com": "Emilie Røsnæs",
   "henrik.elkjaer.hagen@itera.com": "Henrik Elkjær Hagen",
   "anders.klund.hansen@itera.com": "Anders Klund-Hansen",
-  "thomas.andresen@itera.com": "Thomas Westlund-Andresen"
+  "thomas.andresen@itera.com": "Thomas Rene Westlund-Andresen"
 };
