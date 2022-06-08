@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import emojiRegex from "emoji-regex";
 
 export function getDayId(date: Date) {
   return format(date, "ddMMyy");
@@ -23,4 +24,8 @@ function getInitialsFromEmail(email: string) {
   const [username] = email.split("@")
   const parts = username.split(".")
   return `${parts[0][0].toUpperCase()}${parts[parts.length-1][0].toUpperCase()}`
+}
+
+export function emphasizeEmojis(text: string) {
+  return text.replaceAll(emojiRegex(), "<strong class=\"emoji\">$&</strong>")
 }
