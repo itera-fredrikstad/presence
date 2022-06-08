@@ -11,6 +11,7 @@
     <SpaProxyServerUrl>http://localhost:3000</SpaProxyServerUrl>
     <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>b5389544-2763-4ac0-af0a-79140de2fe9f</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
