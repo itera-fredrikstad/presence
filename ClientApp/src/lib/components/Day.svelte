@@ -86,6 +86,16 @@
   function isNonWorkingDay(day: Date) {
     return isSaturday(day) || isSunday(day);
   }
+
+  const beerTriggers = [
+    "pils",
+    "fest",
+    "øl"
+  ];
+
+  function isBeerEvent(eventName: string) {
+    return beerTriggers.filter(t => eventName.toLowerCase().includes(t)).length > 0;
+  }
 </script>
 
 <div
@@ -108,7 +118,7 @@
     <h3>{publicHoliday.name}</h3>
   {/if}
   {#each teamEvents as teamEvent}
-  {@const eventName = teamEvent.name.toLowerCase().indexOf("pils") !== -1 ? ("🍻" + teamEvent.name) : teamEvent.name}
+  {@const eventName = isBeerEvent(teamEvent.name) ? ("🍻" + teamEvent.name) : teamEvent.name}
     <h3>{@html emphasizeEmojis(eventName)} ({format(teamEvent.start, "HH:mm")}-{format(teamEvent.end, "HH:mm")})</h3>
   {/each}
   {#if editComment}
