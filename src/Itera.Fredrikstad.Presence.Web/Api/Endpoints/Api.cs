@@ -1,11 +1,11 @@
 using System.Net;
 using Ical.Net;
 using Itera.Fredrikstad.Presence.Core;
-using Itera.Fredrikstad.Presence.Web.Api;
+using Itera.Fredrikstad.Presence.Web.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using MinimalApis.Extensions.Results;
 
-namespace Itera.Fredrikstad.Presence.Api;
+namespace Itera.Fredrikstad.Presence.Web.Api.Endpoints;
 
 public static class Api
 {

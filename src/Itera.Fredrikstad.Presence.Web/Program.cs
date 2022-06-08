@@ -1,8 +1,7 @@
-using System.Net;
 using Ardalis.SmartEnum.SystemTextJson;
-using Itera.Fredrikstad.Presence.Api;
 using Itera.Fredrikstad.Presence.Core;
 using Itera.Fredrikstad.Presence.Infrastructure;
+using Itera.Fredrikstad.Presence.Web.Api.Endpoints;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
