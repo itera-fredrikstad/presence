@@ -1,7 +1,6 @@
 <script lang="ts">
   import { QueryClient, QueryClientProvider } from "@sveltestack/svelte-query";
   import Picker from "./lib/components/Picker.svelte";
-  import Picker2 from "./lib/components/Picker2.svelte";
   import Summary from "./lib/components/Summary.svelte";
 
   import logo from "./assets/img/itera.png";
