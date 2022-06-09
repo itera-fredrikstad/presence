@@ -2,4 +2,4 @@
 
 namespace Itera.Fredrikstad.Presence.Web.Api.Models;
 
-public record Employee(string UserId, string name, List<DayAtWork> Days);
+public record User(string UserId, string Name);

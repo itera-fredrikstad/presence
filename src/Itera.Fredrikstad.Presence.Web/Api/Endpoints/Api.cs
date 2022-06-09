@@ -11,19 +11,32 @@ public static class Api
 {
     public static void MapApi(this IEndpointRouteBuilder app)
     {
+        app.MapGet("api/user", GetUser);
         app.MapGet("api/daySummary", GetDaySummary);
-        app.MapGet("api/dayAtWork", Get);
+        app.MapGet("api/dayAtWork", GetDayAtWorks);
         app.MapPut("api/dayAtWork", Update);
         app.MapGet("api/teamEvents", GetEvents);
     }
 
-    private static async Task<Ok<Employee>> Get(HttpContext context, [FromServices] IDayAtWorkRepository repo)
+    private static async Task<Results<Ok<User>, Unauthorized>> GetUser(HttpContext context, [FromServices] IDayAtWorkRepository repo)
     {
-        var user = context.User.Identity?.Name ?? "";
-        var name = context.User.FindFirst(claim => claim.Type == "name")?.Value ?? "";
-        var days = await repo.GetDayAtWorkList(user);
-        return Results.Extensions.Ok(new Employee(user, name, days));
+        if(context.User.Identity is { Name: {} } identity) 
+        {
+            return Results.Extensions.Ok(new User(identity.Name, context.User.FindFirst(claim => claim.Type == "name")?.Value ?? ""));
+        }
+
+        return Results.Extensions.Unauthorized();
     }
+
+    private static async Task<Results<Ok<List<DayAtWork>>, Unauthorized>> GetDayAtWorks(HttpContext context, [FromServices] IDayAtWorkRepository repo) 
+    {
+        if(context.User.Identity is { Name: {} } identity)
+        {
+            return Results.Extensions.Ok(await repo.GetDayAtWorkList(identity.Name));
+        }
+        
+        return Results.Extensions.Unauthorized();
+    } 
 
     private static async Task<Ok<DaySummary>> GetDaySummary([FromQuery] DateTime date, [FromServices] IDayAtWorkRepository repo)
     {
