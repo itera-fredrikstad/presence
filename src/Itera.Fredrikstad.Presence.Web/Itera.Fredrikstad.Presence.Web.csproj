@@ -8,17 +8,18 @@
     <IsPackable>false</IsPackable>
     <SpaRoot>ClientApp\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
-    <SpaProxyServerUrl>http://localhost:3000</SpaProxyServerUrl>
-    <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
+    <SpaClientUrl>http://localhost:3000</SpaClientUrl>
+    <SpaLaunchCommand>npm run dev</SpaLaunchCommand>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>b5389544-2763-4ac0-af0a-79140de2fe9f</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Ardalis.SmartEnum.SystemTextJson" Version="2.1.0" />
+    <PackageReference Include="AspNetCore.SpaYarp" Version="1.0.0" />
     <PackageReference Include="Ical.Net" Version="4.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.5" />
     <PackageReference Include="Microsoft.Identity.Web" Version="1.25.0" />
     <PackageReference Include="MinimalApis.Extensions" Version="0.5.2-pre.20220322.22" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />

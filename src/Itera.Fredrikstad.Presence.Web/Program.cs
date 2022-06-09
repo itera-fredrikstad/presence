@@ -2,12 +2,16 @@ using Ardalis.SmartEnum.SystemTextJson;
 using Itera.Fredrikstad.Presence.Core;
 using Itera.Fredrikstad.Presence.Infrastructure;
 using Itera.Fredrikstad.Presence.Web.Api.Endpoints;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSpaYarp();
 
 builder.Services.AddCors();
 
@@ -55,17 +59,34 @@ app.UseCors(opts =>
 
 app.UseCookiePolicy();
 
+app.UseAuthentication();
+
+app.Use(async (context, next) => {
+    if(!(context.User.Identity?.IsAuthenticated ?? false))
+    {
+        await context.ChallengeAsync();
+    }
+    else 
+    {
+        await next();
+    }
+});
+
 if (!app.Environment.IsDevelopment())
 {
-    app.UseHttpsRedirection();
+    app.UseSpaYarp();
 }
 
-app.UseAuthentication();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
+
+if(app.Environment.IsDevelopment()) 
+{
+    app.UseSpaYarp();
+}
 
 app.MapApi();
 app.MapFallbackToFile("index.html");
