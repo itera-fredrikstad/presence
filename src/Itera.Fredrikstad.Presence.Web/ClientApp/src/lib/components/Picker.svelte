@@ -2,11 +2,9 @@
   import { useQuery, useMutation, useQueryClient } from "@sveltestack/svelte-query";
   import { addWeeks, getMonth, format, eachDayOfInterval, getISOWeek, formatISO } from "date-fns";
   import { nb } from "date-fns/locale";
-  import Select from "svelte-select";
-  import { getDayAtWorkItemsForUser, getPublicHolidays, getTeamEvents } from "../api";
+  import { getDayAtWorkItemsForUser, getPublicHolidays, getTeamEvents, getUser } from "../api";
   import Day from "./Day.svelte";
   import type { DayAtWork, Identifiable } from "../models";
-  import { users } from "../users";
   import { getDayId } from "../utils";
 
   const queryClient = useQueryClient();
@@ -33,9 +31,9 @@
   $: holidayQuery = useQuery(["publicHolidays", currentYear], () => getPublicHolidays(currentYear));
   $: query = useQuery(["dayAtWorks"], () => getDayAtWorkItemsForUser());
 
-  $: userId = $query?.data?.userId ?? "";
-  $: name = $query?.data?.name ?? "";
-  name = name;
+  $: userQuery = useQuery(["loggedInUser"], () => getUser());
+
+  $: userId = $userQuery?.data?.userId ?? "";
 
   const teamEventsQuery = useQuery("teamEvents", () => getTeamEvents());
 
@@ -132,9 +130,6 @@
         .map((d) => format(d, "MMMM", { locale: nb }))
         .join("/")})
     </h2>
-    <div class="name-container">
-      <p>{name}</p>
-    </div>
   </div>
   <div class="wrapper">
     {#if offset > 0}
@@ -148,7 +143,7 @@
       >
         {#each workDays as day}
           {@const dayId = getDayId(day)}
-          {@const dayAtWork = $query?.data?.days[dayId]}
+          {@const dayAtWork = $query?.data?.[dayId]}
           {@const publicHoliday = $holidayQuery?.data?.[dayId]}
           {@const teamEvents = $teamEventsQuery?.data?.[dayId] ?? []}
           <div class="day-wrapper">

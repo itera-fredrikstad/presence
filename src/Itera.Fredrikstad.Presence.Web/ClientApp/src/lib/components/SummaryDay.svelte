@@ -8,7 +8,7 @@
   import Attendee from "./Attendee.svelte";
   import Avatar from "./Avatar.svelte";
   import type { DayAtWork } from "../models";
-import { emphasizeEmojis } from "../utils";
+  import { emphasizeEmojis } from "../utils";
 
   export let day: Date;
 

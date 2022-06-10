@@ -4,6 +4,7 @@
   import Summary from "./lib/components/Summary.svelte";
 
   import logo from "./assets/img/itera.png";
+  import User from "./lib/components/User.svelte";
 
   const queryClient = new QueryClient();
 
@@ -15,18 +16,22 @@
 </script>
 
 <main>
-  <div class="navigation">
-    <img class="logo" src={logo} alt="Logo" />
-    <ul>
-      <li>
-        <a href="#oversikt">Oversikt</a>
-      </li>
-      <li>
-        <a href="#registrering">Registrering</a>
-      </li>
-    </ul>
-  </div>
   <QueryClientProvider client={queryClient}>
+    <nav class="navigation">
+      <img class="logo" src={logo} alt="Logo" />
+
+      <div class="right-container">
+        <User />
+        <ul>
+          <li>
+            <a href="#oversikt">Oversikt</a>
+          </li>
+          <li>
+            <a href="#registrering">Registrering</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
     <div class="content-root">
       {#if page === "#registrering"}
         <Picker />
@@ -58,6 +63,12 @@
     justify-content: space-between;
     align-items: flex-start;
     margin-right: 5rem;
+  }
+
+  .right-container {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
   }
 
   .navigation ul {

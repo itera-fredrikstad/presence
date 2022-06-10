@@ -2,6 +2,7 @@ using System.Net;
 using Ical.Net;
 using Itera.Fredrikstad.Presence.Core;
 using Itera.Fredrikstad.Presence.Web.Api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MinimalApis.Extensions.Results;
 
@@ -15,16 +16,30 @@ public static class Api
         app.MapGet("api/dayAtWork", Get);
         app.MapPut("api/dayAtWork", Update);
         app.MapGet("api/teamEvents", GetEvents);
+        app.MapGet("api/user", GetUser);
     }
 
-    private static async Task<Ok<Employee>> Get(HttpContext context, [FromServices] IDayAtWorkRepository repo)
+
+    private static IResult GetUser(HttpContext context)
     {
+        if (!context.User.Identity?.IsAuthenticated ?? true)
+        {
+            return Results.Extensions.Unauthorized();
+        }
         var user = context.User.Identity?.Name ?? "";
         var name = context.User.FindFirst(claim => claim.Type == "name")?.Value ?? "";
-        var days = await repo.GetDayAtWorkList(user);
-        return Results.Extensions.Ok(new Employee(user, name, days));
+        var photo = context.User.FindFirst(claim => claim.Type == GraphClaimTypes.Photo)?.Value ?? "";
+        return Results.Extensions.Ok(new User(user, name, photo));
     }
 
+    private static async Task<Ok<List<DayAtWork>>> Get(HttpContext context, [FromServices] IDayAtWorkRepository repo)
+    {
+        var user = context.User.Identity?.Name ?? "";
+        var days = await repo.GetDayAtWorkList(user);
+        return Results.Extensions.Ok(days);
+    }
+
+    [AllowAnonymous]
     private static async Task<Ok<DaySummary>> GetDaySummary([FromQuery] DateTime date, [FromServices] IDayAtWorkRepository repo)
     {
         var attendees = await repo.GetAttendees(date);
