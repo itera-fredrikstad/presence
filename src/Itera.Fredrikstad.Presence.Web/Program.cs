@@ -35,63 +35,7 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 });
 var scopes = builder.Configuration["AzureAd:Scopes"];
 
-builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApp(options =>
-                {
-                    builder.Configuration.Bind("AzureAd", options);
-
-                    options.Events.OnTokenValidated = async context =>
-                    {
-                        var tokenAcquisition = context.HttpContext.RequestServices
-                            .GetRequiredService<ITokenAcquisition>();
-
-                        var graphClient = new GraphServiceClient(
-                            new DelegateAuthenticationProvider(async (request) =>
-                            {
-                                var token = await tokenAcquisition
-                                    .GetAccessTokenForUserAsync(scopes.Split(' '), user: context.Principal);
-                                request.Headers.Authorization =
-                                    new AuthenticationHeaderValue("Bearer", token);
-                            })
-                        );
-
-                        // Get user information from Graph
-                        var user = await graphClient.Me.Request()
-                            .Select(u => new
-                            {
-                                u.DisplayName,
-                                u.UserPrincipalName,
-                                u.OfficeLocation
-                            })
-                            .GetAsync();
-
-                        context.Principal.AddUserGraphInfo(user);
-
-                        // Get the user's photo
-                        // If the user doesn't have a photo, this throws
-                        try
-                        {
-                            var photo = await graphClient.Me
-                                .Photos["48x48"]
-                                .Content
-                                .Request()
-                                .GetAsync();
-
-                            context.Principal.AddUserGraphPhoto(photo);
-                        }
-                        catch (ServiceException ex)
-                        {
-                            if (ex.IsMatch("ErrorItemNotFound") ||
-                                ex.IsMatch("ConsumerPhotoIsNotSupported"))
-                            {
-                                context.Principal.AddUserGraphPhoto(null);
-                            }
-                            else
-                            {
-                                throw;
-                            }
-                        }
-                    };
-                })
+builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApp(builder.Configuration)
                 // </AddSignInSnippet>
                 // Add ability to call web API (Graph)
                 // and get access tokens
