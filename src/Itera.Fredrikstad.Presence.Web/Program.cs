@@ -64,7 +64,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme).A
                             })
                             .GetAsync();
 
-                        context.Principal.AddUserGraphInfo(user);
+                        context.Principal?.AddUserGraphInfo(user);
 
                         // Get the user's photo
                         // If the user doesn't have a photo, this throws
@@ -76,14 +76,14 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme).A
                                 .Request()
                                 .GetAsync();
 
-                            context.Principal.AddUserGraphPhoto(photo);
+                            context.Principal?.AddUserGraphPhoto(photo);
                         }
                         catch (ServiceException ex)
                         {
                             if (ex.IsMatch("ErrorItemNotFound") ||
                                 ex.IsMatch("ConsumerPhotoIsNotSupported"))
                             {
-                                context.Principal.AddUserGraphPhoto(null);
+                                context.Principal?.AddUserGraphPhoto(null);
                             }
                             else
                             {
@@ -149,11 +149,6 @@ app.Use(async (context, next) =>
         await next();
     }
 });
-
-if (!app.Environment.IsDevelopment())
-{
-    app.UseSpaYarp();
-}
 
 app.UseSwagger();
 app.UseSwaggerUI();
