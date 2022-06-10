@@ -114,7 +114,7 @@
     <h3>{publicHoliday.name}</h3>
   {/if}
   {#each teamEvents as teamEvent}
-    {@const eventName = isBeerEvent(teamEvent.name) ? "🍻" + teamEvent.name : teamEvent.name}
+    {@const eventName = isBeerEvent(teamEvent.name) ? "🍻 " + teamEvent.name : teamEvent.name}
     <h3>
       {@html emphasizeEmojis(eventName)} ({format(teamEvent.start, "HH:mm")}-{format(
         teamEvent.end,

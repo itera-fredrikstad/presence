@@ -1,3 +1,3 @@
-namespace Itera.Fredrikstad.Presence.Web.Api.Models;
+﻿namespace Itera.Fredrikstad.Presence.Web.Api.Models;
 
-public record User(string UserId, string name, string photo);
+public record User(string UserId, string Name, string Photo);

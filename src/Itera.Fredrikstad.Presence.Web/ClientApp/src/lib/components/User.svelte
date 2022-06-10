@@ -2,7 +2,7 @@
   import { useQuery } from "@sveltestack/svelte-query";
   import { getUser } from "../api";
 
-  $: query = useQuery(["loggedInUser"], () => getUser());
+  $: query = useQuery(["user"], () => getUser());
   $: name = $query?.data?.name ?? "";
   $: photo = $query?.data?.photo ?? "";
   name = name;

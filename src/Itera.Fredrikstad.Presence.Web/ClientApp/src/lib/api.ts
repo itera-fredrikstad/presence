@@ -12,11 +12,21 @@ export type DayAtWorkDto = {
   comment?: string;
 };
 
+export type UserDto = {
+  userId: string;
+  name: string;
+  photo: string;
+};
+
+export async function getUser(): Promise<UserDto> {
+  return (await axios.get<UserDto>(`api/user`)).data;
+}
+
 export async function getDayAtWorkItemsForUser(): Promise<DayAtWorkItemsMap> {
   const res = await axios
-    .get<DayAtWork[]>(`api/dayAtWork`);
+    .get<DayAtWorkDto[]>(`api/dayAtWork`);
   
-  const days = res.data.reduce(
+  return res.data.reduce(
     (p, n) => ({
       ...p,
       ...(map(parseJSON(n.date), date => map(getDayId(date), id => ({
@@ -30,9 +40,7 @@ export async function getDayAtWorkItemsForUser(): Promise<DayAtWorkItemsMap> {
       }))))
     }),
     {} as DayAtWorkItemsMap);
-
-    return days
-  }
+}
 
 export async function getDayAtWorkItems(day: Date): Promise<DayAtWork[]> {
   const date = formatISO(day, {representation: "date"})
@@ -41,6 +49,17 @@ export async function getDayAtWorkItems(day: Date): Promise<DayAtWork[]> {
 
 
   return res.data.attendees
+}
+
+export async function addOrUpdateDayAtWork(dayAtWork: DayAtWork) {
+  const dto: DayAtWorkDto = {
+    userId: dayAtWork.userId,
+    date: formatISO(dayAtWork.date, { representation: "date" }),
+    type: dayAtWork.type,
+    comment: dayAtWork.comment
+  };
+  
+  await axios.put("api/dayAtWork", dto);
 }
 
 export type PublicHolidayDto = {
@@ -87,16 +106,4 @@ export async function getTeamEvents(): Promise<TeamEventMap> {
       ]
     }))))
   }), {});
-}
-
-export type User = {
-  userId: string;
-  name: string;
-  photo: string;
-};
-
-
-export async function getUser(): Promise<User> {
-  const res = await axios.get<User>(`api/user`);
-  return res.data
 }
