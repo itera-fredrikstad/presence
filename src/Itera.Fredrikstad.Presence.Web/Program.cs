@@ -5,7 +5,6 @@ using Itera.Fredrikstad.Presence.Web.Api.Endpoints;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 
@@ -72,18 +71,13 @@ app.Use(async (context, next) => {
     }
 });
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseSpaYarp();
-}
-
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 
-if(app.Environment.IsDevelopment()) 
+if (!app.Configuration.GetValue<bool>("FeatureManagement:DisableSpa"))
 {
     app.UseSpaYarp();
 }
