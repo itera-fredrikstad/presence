@@ -5,7 +5,7 @@
 using System.Security.Claims;
 using Microsoft.Graph;
 
-namespace Itera.Fredrikstad.Presence.Core
+namespace Itera.Fredrikstad.Presence.Web
 {
     public static class GraphClaimTypes
     {
@@ -36,10 +36,14 @@ namespace Itera.Fredrikstad.Presence.Core
         public static void AddUserGraphInfo(this ClaimsPrincipal claimsPrincipal, User user)
         {
             var identity = claimsPrincipal.Identity as ClaimsIdentity;
+            if (identity == null)
+            {
+                return;
+            }
 
-            identity?.AddClaim(
+            identity.AddClaim(
                 new Claim(GraphClaimTypes.DisplayName, user.DisplayName));
-            identity?.AddClaim(
+            identity.AddClaim(
                 new Claim(GraphClaimTypes.Email,
                     user.Mail ?? user.UserPrincipalName));
         }
@@ -47,11 +51,15 @@ namespace Itera.Fredrikstad.Presence.Core
         public static void AddUserGraphPhoto(this ClaimsPrincipal claimsPrincipal, Stream photoStream)
         {
             var identity = claimsPrincipal.Identity as ClaimsIdentity;
+            if (identity == null)
+            {
+                return;
+            }
 
             if (photoStream == null)
             {
                 // Add the default profile photo
-                identity?.AddClaim(
+                identity.AddClaim(
                     new Claim(GraphClaimTypes.Photo, "/img/no-profile-photo.png"));
                 return;
             }
@@ -65,7 +73,7 @@ namespace Itera.Fredrikstad.Presence.Core
             // Generate a date URI for the photo
             var photoUrl = $"data:image/png;base64,{Convert.ToBase64String(photoBytes)}";
 
-            identity?.AddClaim(
+            identity.AddClaim(
                 new Claim(GraphClaimTypes.Photo, photoUrl));
         }
     }

@@ -2,6 +2,7 @@ using System.Net.Http.Headers;
 using Ardalis.SmartEnum.SystemTextJson;
 using Itera.Fredrikstad.Presence.Core;
 using Itera.Fredrikstad.Presence.Infrastructure;
+using Itera.Fredrikstad.Presence.Web;
 using Itera.Fredrikstad.Presence.Web.Api.Endpoints;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
