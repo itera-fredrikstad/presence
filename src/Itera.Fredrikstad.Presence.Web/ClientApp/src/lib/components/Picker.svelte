@@ -1,22 +1,13 @@
 <script lang="ts">
-  import {
-    useQuery,
-    useMutation,
-    useQueryClient,
-  } from "@sveltestack/svelte-query";
-  import {
-    addWeeks,
-    getMonth,
-    format,
-    eachDayOfInterval,
-    getISOWeek,
-  } from "date-fns";
+  import { useQuery, useMutation, useQueryClient } from "@sveltestack/svelte-query";
+  import { addWeeks, getMonth, format, eachDayOfInterval, getISOWeek } from "date-fns";
   import { nb } from "date-fns/locale";
   import {
     addOrUpdateDayAtWork,
     getDayAtWorkItemsForUser,
     getPublicHolidays,
     getTeamEvents,
+    getUser,
   } from "../api";
   import Day from "./Day.svelte";
 
@@ -38,10 +29,7 @@
   $: workDays = allDays;
   $: currentWindow = workDays.slice(offset * numDays, (offset + 1) * numDays);
   $: weeks = Object.keys(
-    currentWindow.reduce(
-      (prev, next) => ({ ...prev, [getISOWeek(next)]: true }),
-      {}
-    )
+    currentWindow.reduce((prev, next) => ({ ...prev, [getISOWeek(next)]: true }), {})
   );
   $: months = currentWindow.reduce<{ [key: string]: Date }>(
     (prev, next) => ({ ...prev, [getMonth(next)]: next }),
@@ -49,10 +37,12 @@
   );
   $: currentYear = format(currentWindow[0], "yyyy");
 
-  $: holidayQuery = useQuery(["publicHolidays", currentYear], () =>
-    getPublicHolidays(currentYear)
-  );
+  $: holidayQuery = useQuery(["publicHolidays", currentYear], () => getPublicHolidays(currentYear));
   $: query = useQuery(["dayAtWorks"], () => getDayAtWorkItemsForUser());
+
+  $: userQuery = useQuery(["loggedInUser"], () => getUser());
+
+  $: userId = $userQuery?.data?.userId ?? "";
 
   const teamEventsQuery = useQuery("teamEvents", () => getTeamEvents());
 
@@ -67,8 +57,7 @@
   }
 
   const mutation = useMutation(
-    (newDayAtWork: Identifiable<DayAtWork>) =>
-      addOrUpdateDayAtWork(newDayAtWork),
+    (newDayAtWork: Identifiable<DayAtWork>) => addOrUpdateDayAtWork(newDayAtWork),
     {
       // When mutate is called:
       onMutate: async (newTodo) => {
@@ -76,10 +65,7 @@
         await queryClient.cancelQueries(["dayAtWorks", newTodo.userId]);
 
         // Snapshot the previous value
-        const previousTodos = queryClient.getQueryData([
-          "dayAtWorks",
-          newTodo.userId,
-        ]);
+        const previousTodos = queryClient.getQueryData(["dayAtWorks", newTodo.userId]);
 
         // Optimistically update to the new value
         queryClient.setQueryData(["dayAtWorks", newTodo.userId], (old: {}) => ({
@@ -92,10 +78,7 @@
       },
       // If the mutation fails, use the context returned from onMutate to roll back
       onError: (err, newTodo, context: any) => {
-        queryClient.setQueryData(
-          ["dayAtWorks", newTodo.userId],
-          context.previousTodos
-        );
+        queryClient.setQueryData(["dayAtWorks", newTodo.userId], context.previousTodos);
       },
       // Always refetch after error or success:
       onSettled: () => {

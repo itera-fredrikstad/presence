@@ -91,7 +91,7 @@
   }
 
   .menu {
-      display: flex;
-      align-items: center;
+    display: flex;
+    align-items: center;
   }
 </style>
