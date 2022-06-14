@@ -10,7 +10,6 @@
   let page = document?.location?.hash;
 
   $: query = useQuery(["user"], () => getUser());
-  $: console.log($query.data);
 
   window.onpopstate = function () {
     page = document.location.hash;

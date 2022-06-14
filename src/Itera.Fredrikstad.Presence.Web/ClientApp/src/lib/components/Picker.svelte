@@ -180,6 +180,11 @@
     display: flex;
   }
 
+  @media only screen and (max-width: 480px) {
+    .days {
+      flex-direction: column;
+    }
+  }
   .day-wrapper {
     flex-basis: calc(100% / 5);
     flex-shrink: 0;

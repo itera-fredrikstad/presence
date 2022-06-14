@@ -100,6 +100,12 @@
     display: flex;
   }
 
+  @media only screen and (max-width: 480px) {
+    .days {
+      flex-direction: column;
+    }
+  }
+
   .slide {
     transition: all 0.5s;
   }

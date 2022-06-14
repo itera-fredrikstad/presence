@@ -149,6 +149,12 @@
     height: 100%;
   }
 
+  @media only screen and (max-width: 480px) {
+    .day {
+      margin-bottom: 1rem;
+    }
+  }
+
   .non-working {
     color: #999;
     background: repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #dfdfdf 5px, #dfdfdf 10px);
