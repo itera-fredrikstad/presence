@@ -157,7 +157,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 
-if (app.Environment.IsDevelopment())
+if (!app.Configuration.GetValue<bool>("FeatureManagement:DisableSpa"))
 {
     app.UseSpaYarp();
 }
