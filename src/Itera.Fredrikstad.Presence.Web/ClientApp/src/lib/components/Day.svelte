@@ -92,9 +92,7 @@
   const beerTriggers = ["pils", "fest", "øl"];
 
   function isBeerEvent(eventName: string) {
-    return (
-      beerTriggers.filter((t) => eventName.toLowerCase().includes(t)).length > 0
-    );
+    return beerTriggers.filter((t) => eventName.toLowerCase().includes(t)).length > 0;
   }
 </script>
 
@@ -120,14 +118,12 @@
     <h3>{publicHoliday.name}</h3>
   {/if}
   {#each teamEvents as teamEvent}
-    {@const eventName = isBeerEvent(teamEvent.name)
-      ? "🍻 " + teamEvent.name
-      : teamEvent.name}
+    {@const eventName = isBeerEvent(teamEvent.name) ? "🍻 " + teamEvent.name : teamEvent.name}
     <h3>
-      {@html emphasizeEmojis(eventName)} ({format(
-        teamEvent.start,
+      {@html emphasizeEmojis(eventName)} ({format(teamEvent.start, "HH:mm")}-{format(
+        teamEvent.end,
         "HH:mm"
-      )}-{format(teamEvent.end, "HH:mm")})
+      )})
     </h3>
   {/each}
   {#if editComment}
@@ -157,15 +153,15 @@
     height: 100%;
   }
 
+  @media only screen and (max-width: 480px) {
+    .day {
+      margin-bottom: 1rem;
+    }
+  }
+
   .non-working {
     color: #999;
-    background: repeating-linear-gradient(
-      -45deg,
-      #efefef,
-      #efefef 5px,
-      #dfdfdf 5px,
-      #dfdfdf 10px
-    );
+    background: repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #dfdfdf 5px, #dfdfdf 10px);
   }
 
   .day:hover {
@@ -185,13 +181,7 @@
   }
 
   .day.selected {
-    background: repeating-linear-gradient(
-      -45deg,
-      #efefef,
-      #efefef 5px,
-      #ffcccb 5px,
-      #ffcccb 10px
-    );
+    background: repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #ffcccb 5px, #ffcccb 10px);
   }
 
   .day.selected.first-half {
@@ -202,13 +192,7 @@
         rgba(238, 238, 238, 0) 50%,
         rgba(238, 238, 238, 0) 100%
       ),
-      repeating-linear-gradient(
-        -45deg,
-        #efefef,
-        #efefef 5px,
-        #ffcccb 5px,
-        #ffcccb 10px
-      );
+      repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #ffcccb 5px, #ffcccb 10px);
   }
 
   .day.selected.last-half {
@@ -219,13 +203,7 @@
         rgba(238, 238, 238, 0) 50%,
         rgba(238, 238, 238, 0) 100%
       ),
-      repeating-linear-gradient(
-        -45deg,
-        #efefef,
-        #efefef 5px,
-        #ffcccb 5px,
-        #ffcccb 10px
-      );
+      repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #ffcccb 5px, #ffcccb 10px);
   }
 
   .day h1 {

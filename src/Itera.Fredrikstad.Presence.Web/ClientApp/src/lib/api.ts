@@ -15,6 +15,7 @@ export type DayAtWorkDto = {
 export type UserDto = {
   userId: string;
   name: string;
+  photo: string;
 };
 
 export async function getUser(): Promise<UserDto> {

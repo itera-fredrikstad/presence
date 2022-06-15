@@ -8,7 +8,7 @@
   import Attendee from "./Attendee.svelte";
   import Avatar from "./Avatar.svelte";
   import type { DayAtWork } from "../models";
-import { emphasizeEmojis } from "../utils";
+  import { emphasizeEmojis } from "../utils";
 
   export let day: Date;
 
@@ -81,6 +81,14 @@ import { emphasizeEmojis } from "../utils";
     flex-basis: 20%;
     max-width: 20%;
     flex-shrink: 0;
+  }
+
+  @media only screen and (max-width: 480px) {
+    .day {
+      flex-basis: 100%;
+      max-width: 100%;
+      margin-bottom: 1rem;
+    }
   }
 
   .day:hover {
