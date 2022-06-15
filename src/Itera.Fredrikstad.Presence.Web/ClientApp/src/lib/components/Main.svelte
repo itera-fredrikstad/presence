@@ -10,7 +10,6 @@
   let page = document?.location?.hash;
 
   $: query = useQuery(["user"], () => getUser());
-  $: console.log($query.data);
 
   window.onpopstate = function () {
     page = document.location.hash;
@@ -91,7 +90,7 @@
   }
 
   .menu {
-      display: flex;
-      align-items: center;
+    display: flex;
+    align-items: center;
   }
 </style>

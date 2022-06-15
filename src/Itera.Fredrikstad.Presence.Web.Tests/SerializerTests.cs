@@ -31,7 +31,7 @@ namespace Itera.Fredrikstad.Presence.Web.Tests
 
             var deserializedDaySummary = JsonSerializer.Deserialize<DaySummary>(serializedString, _jsonOptions);
             deserializedDaySummary.Should().NotBeNull();
-            deserializedDaySummary.Date.Should().Be(daySummary.Date);
+            deserializedDaySummary!.Date.Should().Be(daySummary.Date);
             deserializedDaySummary.Attendees.Should().BeEquivalentTo(daySummary.Attendees);
         }
 
@@ -46,7 +46,7 @@ namespace Itera.Fredrikstad.Presence.Web.Tests
 
             var deserializedAttendee = JsonSerializer.Deserialize<DayAttendee>(serializedAttendee, _jsonOptions);
             deserializedAttendee.Should().NotBeNull();
-            deserializedAttendee.Type.Should().Be(attendee.Type);
+            deserializedAttendee!.Type.Should().Be(attendee.Type);
             deserializedAttendee.UserId.Should().Be(attendee.UserId);
             deserializedAttendee.Comment.Should().Be(attendee.Comment);
         }
