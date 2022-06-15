@@ -4,6 +4,7 @@ using Itera.Fredrikstad.Presence.Core;
 using Itera.Fredrikstad.Presence.Web.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using MinimalApis.Extensions.Results;
 
 namespace Itera.Fredrikstad.Presence.Web.Api.Endpoints;
@@ -14,6 +15,7 @@ public static class Api
     {
         app.MapGet("api/user", GetUser);
         app.MapGet("api/daySummary", GetDaySummary);
+        app.MapGet("api/daySummaryRange", GetDaySummaryRange);
         app.MapGet("api/dayAtWork", GetDayAtWorks);
         app.MapPut("api/dayAtWork", Update);
         app.MapGet("api/teamEvents", GetEvents);
@@ -40,16 +42,50 @@ public static class Api
     }
 
     [AllowAnonymous]
-    private static async Task<Ok<DaySummary>> GetDaySummary([FromQuery] DateTime date, [FromServices] IDayAtWorkRepository repo)
+    private static async Task<Ok<DaySummary>> GetDaySummary([FromQuery] DateTime date, [FromServices] IDayAtWorkRepository repo, [FromServices] IMemoryCache cache)
     {
-        var attendees = await repo.GetAttendees(date);
-        return Results.Extensions.Ok(new DaySummary(date, attendees.Select(a => new DayAttendee(a.UserId, a.Type, a.Comment)).ToList()));
+        var result = await cache.GetOrCreateAsync("summary-" + date.Date, async entry =>
+        {
+            entry.SetSlidingExpiration(TimeSpan.FromMinutes(10));
+            return new DaySummary(
+                date, (await repo.GetAttendees(date.Date))
+                .Select(a => new DayAttendee(a.UserId, a.Type, a.Comment))
+                .ToList());
+        });
+        
+        return Results.Extensions.Ok(result);
+    }
+    
+    [AllowAnonymous]
+    private static async Task<Ok<List<DaySummary>>> GetDaySummaryRange([FromQuery] DateTime fromDate, [FromQuery] DateTime toDate, [FromServices] IDayAtWorkRepository repo, [FromServices] IMemoryCache cache)
+    {
+        var datesToRetrieve = Enumerable
+            .Range(0, 1 + toDate.Date.Subtract(fromDate.Date).Days)
+            .Select(offset => fromDate.Date.AddDays(offset));
+
+        var result = await datesToRetrieve
+            .SelectAsync(date => cache
+                .GetOrCreateAsync(
+                    "summary-" + date,
+                    async entry =>
+                    {
+                        entry.SetSlidingExpiration(TimeSpan.FromMinutes(10));
+                        return new DaySummary(
+                            date, (await repo.GetAttendees(date))
+                            .Select(a => new DayAttendee(a.UserId, a.Type, a.Comment))
+                            .ToList());
+                    }))
+            .ToListAsync();
+
+        return Results.Extensions.Ok(result);
     }
 
-    private static async Task<Ok> Update([FromBody] DayAtWork dayAtWork, [FromServices] IDayAtWorkRepository repo)
+    private static async Task<Ok> Update([FromBody] DayAtWork dayAtWork, [FromServices] IDayAtWorkRepository repo, [FromServices] IMemoryCache cache)
     {
         await repo.Update(dayAtWork);
-
+        
+        cache.Remove("summary" + dayAtWork.Date.Date);
+        
         return Results.Extensions.Ok();
     }
 

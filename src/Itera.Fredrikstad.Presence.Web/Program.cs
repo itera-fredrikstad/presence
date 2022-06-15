@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Graph;
 using Microsoft.Identity.Web;
 using WebApplication = Microsoft.AspNetCore.Builder.WebApplication;
@@ -30,86 +29,79 @@ builder.Services.Configure<JsonOptions>(opts =>
 
 builder.Services.AddDbContext(builder.Configuration.GetConnectionString("Sql"));
 
-builder.Services.Configure<CookiePolicyOptions>(options =>
-{
-    options.Secure = CookieSecurePolicy.Always;
-});
+builder.Services.Configure<CookiePolicyOptions>(options => { options.Secure = CookieSecurePolicy.Always; });
+
 var scopes = builder.Configuration["AzureAd:Scopes"];
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApp(options =>
+    {
+        builder.Configuration.Bind("AzureAd", options);
+
+        options.Events.OnTokenValidated = async context =>
+        {
+            var tokenAcquisition = context.HttpContext.RequestServices
+                .GetRequiredService<ITokenAcquisition>();
+
+            var graphClient = new GraphServiceClient(
+                new DelegateAuthenticationProvider(async (request) =>
                 {
-                    builder.Configuration.Bind("AzureAd", options);
-
-                    options.Events.OnTokenValidated = async context =>
-                    {
-                        var tokenAcquisition = context.HttpContext.RequestServices
-                            .GetRequiredService<ITokenAcquisition>();
-
-                        var graphClient = new GraphServiceClient(
-                            new DelegateAuthenticationProvider(async (request) =>
-                            {
-                                var token = await tokenAcquisition
-                                    .GetAccessTokenForUserAsync(scopes.Split(' '), user: context.Principal);
-                                request.Headers.Authorization =
-                                    new AuthenticationHeaderValue("Bearer", token);
-                            })
-                        );
-
-                        // Get user information from Graph
-                        var user = await graphClient.Me.Request()
-                            .Select(u => new
-                            {
-                                u.DisplayName,
-                                u.UserPrincipalName,
-                                u.OfficeLocation
-                            })
-                            .GetAsync();
-
-                        context.Principal?.AddUserGraphInfo(user);
-
-                        // Get the user's photo
-                        // If the user doesn't have a photo, this throws
-                        try
-                        {
-                            var photo = await graphClient.Me
-                                .Photos["48x48"]
-                                .Content
-                                .Request()
-                                .GetAsync();
-
-                            context.Principal?.AddUserGraphPhoto(photo);
-                        }
-                        catch (ServiceException ex)
-                        {
-                            if (ex.IsMatch("ErrorItemNotFound") ||
-                                ex.IsMatch("ConsumerPhotoIsNotSupported"))
-                            {
-                                context.Principal?.AddUserGraphPhoto(null);
-                            }
-                            else
-                            {
-                                throw;
-                            }
-                        }
-                    };
+                    var token = await tokenAcquisition
+                        .GetAccessTokenForUserAsync(scopes.Split(' '), user: context.Principal);
+                    request.Headers.Authorization =
+                        new AuthenticationHeaderValue("Bearer", token);
                 })
-                // </AddSignInSnippet>
-                // Add ability to call web API (Graph)
-                // and get access tokens
-                .EnableTokenAcquisitionToCallDownstreamApi(options =>
+            );
+
+            // Get user information from Graph
+            var user = await graphClient.Me.Request()
+                .Select(u => new
                 {
-                    builder.Configuration.Bind("AzureAd", options);
-                }, scopes.Split(' '))
-                // <AddGraphClientSnippet>
-                // Add a GraphServiceClient via dependency injection
-                .AddMicrosoftGraph(options =>
-                {
-                    options.Scopes = scopes;
+                    u.DisplayName,
+                    u.UserPrincipalName,
+                    u.OfficeLocation
                 })
-                // </AddGraphClientSnippet>
-                // Use in-memory token cache
-                // See https://github.com/AzureAD/microsoft-identity-web/wiki/token-cache-serialization
-                .AddInMemoryTokenCaches();
+                .GetAsync();
+
+            context.Principal?.AddUserGraphInfo(user);
+
+            // Get the user's photo
+            // If the user doesn't have a photo, this throws
+            try
+            {
+                var photo = await graphClient.Me
+                    .Photos["48x48"]
+                    .Content
+                    .Request()
+                    .GetAsync();
+
+                context.Principal?.AddUserGraphPhoto(photo);
+            }
+            catch (ServiceException ex)
+            {
+                if (ex.IsMatch("ErrorItemNotFound") ||
+                    ex.IsMatch("ConsumerPhotoIsNotSupported"))
+                {
+                    context.Principal?.AddUserGraphPhoto(null);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        };
+    })
+    // </AddSignInSnippet>
+    // Add ability to call web API (Graph)
+    // and get access tokens
+    .EnableTokenAcquisitionToCallDownstreamApi(options => { builder.Configuration.Bind("AzureAd", options); },
+        scopes.Split(' '))
+    // <AddGraphClientSnippet>
+    // Add a GraphServiceClient via dependency injection
+    .AddMicrosoftGraph(options => { options.Scopes = scopes; })
+    // </AddGraphClientSnippet>
+    // Use in-memory token cache
+    // See https://github.com/AzureAD/microsoft-identity-web/wiki/token-cache-serialization
+    .AddInMemoryTokenCaches();
 
 builder.Services.AddAuthorization(options =>
 {
@@ -141,7 +133,8 @@ app.UseAuthentication();
 
 app.Use(async (context, next) =>
 {
-    if (!(context.User.Identity?.IsAuthenticated ?? false) && !context.Request.Path.ToString().Equals("/api/daySummary"))
+    if (!(context.User.Identity?.IsAuthenticated ?? false) &&
+        !context.Request.Path.ToString().Equals("/api/daySummary"))
     {
         await context.ChallengeAsync();
     }
