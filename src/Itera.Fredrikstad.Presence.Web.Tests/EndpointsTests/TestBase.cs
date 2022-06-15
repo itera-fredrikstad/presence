@@ -8,6 +8,7 @@ using System.Text.Json;
 using Xunit;
 using Ardalis.SmartEnum.SystemTextJson;
 using Itera.Fredrikstad.Presence.Core;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Itera.Fredrikstad.Presence.Web.Tests.EndpointsTests
 {
@@ -23,22 +24,23 @@ namespace Itera.Fredrikstad.Presence.Web.Tests.EndpointsTests
 
             Client = factory.WithWebHostBuilder(builder =>
             {
+                builder.UseEnvironment("IntegrationTests");
                 builder.ConfigureTestServices(services =>
                 {
                     services.AddAuthentication("Test")
                         .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", _ => { });
-
                 });
                 builder.ConfigureAppConfiguration((_, configBuilder) =>
                 {
                     configBuilder.AddInMemoryCollection(
                         new Dictionary<string, string>
                         {
-                            ["FeatureManagement:DisableSpa"] = "true"
+                            //["someAppSetting"] = "someAppsettingValue"
                         }
                     );
                 });
             })
+
             .CreateClient(new WebApplicationFactoryClientOptions
             {
                 AllowAutoRedirect = false,

@@ -24,7 +24,8 @@ namespace Itera.Fredrikstad.Presence.Web.Tests.EndpointsTests
 
             var user = JsonSerializer.Deserialize<User>(result, JsonOptions);
             Console.WriteLine(result);
-            user.UserId.Should().Be("Test user");
+            user.Should().NotBeNull();
+            user!.UserId.Should().Be("Test user");
         }
 
     }

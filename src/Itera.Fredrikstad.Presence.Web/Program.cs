@@ -1,4 +1,3 @@
-using System.Net.Http.Headers;
 using Ardalis.SmartEnum.SystemTextJson;
 using Itera.Fredrikstad.Presence.Core;
 using Itera.Fredrikstad.Presence.Infrastructure;
@@ -10,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Graph;
 using Microsoft.Identity.Web;
+using System.Net.Http.Headers;
 using WebApplication = Microsoft.AspNetCore.Builder.WebApplication;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -151,7 +151,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 
-if (app.Environment.IsDevelopment() && !app.Configuration.GetValue<bool>("FeatureManagement:DisableSpa"))
+if (app.Environment.IsDevelopment())
 {
     app.UseSpaYarp();
 }

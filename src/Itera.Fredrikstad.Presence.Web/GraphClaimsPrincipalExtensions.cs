@@ -48,7 +48,7 @@ namespace Itera.Fredrikstad.Presence.Web
                     user.Mail ?? user.UserPrincipalName));
         }
 
-        public static void AddUserGraphPhoto(this ClaimsPrincipal claimsPrincipal, Stream photoStream)
+        public static void AddUserGraphPhoto(this ClaimsPrincipal claimsPrincipal, Stream? photoStream)
         {
             var identity = claimsPrincipal.Identity as ClaimsIdentity;
             if (identity == null)

@@ -23,7 +23,8 @@ namespace Itera.Fredrikstad.Presence.Web.Tests.EndpointsTests
             Console.WriteLine(result);
 
             var daySummary = JsonSerializer.Deserialize<DaySummary>(result, JsonOptions);
-            daySummary.Date.Date.Equals(new DateTime(2022, 08, 06));
+            daySummary.Should().NotBeNull();
+            daySummary!.Date.Date.Equals(new DateTime(2022, 08, 06));
             daySummary.Attendees.Should().NotBeEmpty();
         }
     }
