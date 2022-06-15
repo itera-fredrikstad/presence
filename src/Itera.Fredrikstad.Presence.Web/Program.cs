@@ -14,6 +14,7 @@ using WebApplication = Microsoft.AspNetCore.Builder.WebApplication;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddMemoryCache();
 builder.Services.AddSpaYarp();
 
 builder.Services.AddCors();

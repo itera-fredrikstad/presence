@@ -84,7 +84,7 @@ public static class Api
     {
         await repo.Update(dayAtWork);
         
-        cache.Remove("summary" + dayAtWork.Date.Date);
+        cache.Remove("summary-" + dayAtWork.Date.Date);
         
         return Results.Extensions.Ok();
     }
