@@ -2,16 +2,18 @@
   import { afterUpdate } from "svelte";
   import { format, isFirstDayOfMonth, isSaturday, isSunday } from "date-fns";
   import { nb } from "date-fns/locale";
-  
+
   import type { Identifiable, DayAtWork, DayAtWorkType } from "../models";
   import type { PublicHoliday, TeamEvent } from "../api";
   import { emphasizeEmojis } from "../utils";
 
   export let day: Date;
-  export let dayAtWork: (Identifiable<DayAtWork> | undefined) = null;
+  export let dayAtWork: Identifiable<DayAtWork> | undefined = null;
   export let publicHoliday: PublicHoliday | undefined = null;
   export let teamEvents: TeamEvent[] | undefined = [];
   export let onUpdate: (dayAtWork: Partial<DayAtWork>) => void;
+
+  export let showDayName: boolean = true;
 
   let editComment: boolean;
   let commentField: any;
@@ -20,7 +22,7 @@
   let oldDayAtWork = dayAtWork;
 
   afterUpdate(() => {
-    if(oldDayAtWork !== dayAtWork) {
+    if (oldDayAtWork !== dayAtWork) {
       comment = dayAtWork?.comment;
       oldDayAtWork = dayAtWork;
     }
@@ -47,17 +49,17 @@
   }
 
   function onClick() {
-    if(isFirstHalf(dayAtWork)) {
+    if (isFirstHalf(dayAtWork)) {
       onUpdate({ date: day, type: "LAST-HALF" });
       return;
     }
 
-    if(isLastHalf(dayAtWork)) {
-      onUpdate({ date: day, type: "EMPTY" })
+    if (isLastHalf(dayAtWork)) {
+      onUpdate({ date: day, type: "EMPTY" });
       return;
     }
 
-    if(isFull(dayAtWork)) {
+    if (isFull(dayAtWork)) {
       onUpdate({ date: day, type: "FIRST-HALF" });
       return;
     }
@@ -66,7 +68,7 @@
   }
 
   function handleUpdateComment() {
-    if(!editComment) {
+    if (!editComment) {
       return;
     }
 
@@ -87,14 +89,12 @@
     return isSaturday(day) || isSunday(day);
   }
 
-  const beerTriggers = [
-    "pils",
-    "fest",
-    "øl"
-  ];
+  const beerTriggers = ["pils", "fest", "øl"];
 
   function isBeerEvent(eventName: string) {
-    return beerTriggers.filter(t => eventName.toLowerCase().includes(t)).length > 0;
+    return (
+      beerTriggers.filter((t) => eventName.toLowerCase().includes(t)).length > 0
+    );
   }
 </script>
 
@@ -104,7 +104,7 @@
   class:last-half={isLastHalf(dayAtWork)}
   class="day"
   class:non-working={isNonWorkingDay(day) || !!publicHoliday}
-  on:click="{onClick}"
+  on:click={onClick}
   on:contextmenu|preventDefault={handleStartEditComment}
 >
   <h1>
@@ -113,26 +113,36 @@
       {format(day, "MMMM", { locale: nb })}
     {/if}
   </h1>
-  <h2>{format(day, "eeee", { locale: nb })}</h2>
+  {#if showDayName}
+    <h2>{format(day, "eeee", { locale: nb })}</h2>
+  {/if}
   {#if !!publicHoliday}
     <h3>{publicHoliday.name}</h3>
   {/if}
   {#each teamEvents as teamEvent}
-  {@const eventName = isBeerEvent(teamEvent.name) ? ("🍻 " + teamEvent.name) : teamEvent.name}
-    <h3>{@html emphasizeEmojis(eventName)} ({format(teamEvent.start, "HH:mm")}-{format(teamEvent.end, "HH:mm")})</h3>
+    {@const eventName = isBeerEvent(teamEvent.name)
+      ? "🍻 " + teamEvent.name
+      : teamEvent.name}
+    <h3>
+      {@html emphasizeEmojis(eventName)} ({format(
+        teamEvent.start,
+        "HH:mm"
+      )}-{format(teamEvent.end, "HH:mm")})
+    </h3>
   {/each}
   {#if editComment}
-    <textarea 
-      bind:this="{commentField}"
-      bind:value="{comment}"
+    <textarea
+      bind:this={commentField}
+      bind:value={comment}
       class="inactive"
-      class:hide="{!comment && !editComment}"
-      on:blur="{handleUpdateComment}"/>
-    {:else if comment}
-      <p class="comment">
-        {@html emphasizeEmojis(comment || "")}
-      </p>
-    {/if}
+      class:hide={!comment && !editComment}
+      on:blur={handleUpdateComment}
+    />
+  {:else if comment}
+    <p class="comment">
+      {@html emphasizeEmojis(comment || "")}
+    </p>
+  {/if}
 </div>
 
 <style>
