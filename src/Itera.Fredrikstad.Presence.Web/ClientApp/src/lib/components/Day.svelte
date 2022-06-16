@@ -283,11 +283,6 @@
     width: fit-content;
   }
 
-  :global(.dark) .day h1,
-  :global(.dark) .day h2 {
-    background-color: #666;
-  }
-
   .day h3 {
     margin: 0;
     font-size: 0.6rem;
@@ -295,6 +290,12 @@
     padding: 0.2rem 0.5rem;
     text-transform: uppercase;
     width: fit-content;
+  }
+
+  :global(.dark) .day h1,
+  :global(.dark) .day h2,
+  :global(.dark) .day h3 {
+    background-color: #666;
   }
 
   h3 > :global(.emoji) {
