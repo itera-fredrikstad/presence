@@ -147,6 +147,7 @@
         class="inactive"
         class:hide={!comment && !editComment}
         on:blur={handleUpdateComment}
+        on:click|stopPropagation
       />
     {:else if comment}
       <p class="comment">
