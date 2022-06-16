@@ -15,6 +15,7 @@
 
   export let showDayName: boolean = true;
 
+  let pressed;
   let editComment: boolean;
   let commentField: any;
   let comment: string;
@@ -77,7 +78,8 @@
     onUpdate({ comment });
   }
 
-  function handleStartEditComment() {
+  function handleStartEditComment(e) {
+    e.stopPropagation();
     editComment = true;
     setTimeout(() => {
       commentField.setSelectionRange(0, commentField.value.length);
@@ -96,49 +98,52 @@
   }
 </script>
 
-<div
-  class:selected={isSelected(dayAtWork) && !isEmpty(dayAtWork)}
-  class:first-half={isFirstHalf(dayAtWork)}
-  class:last-half={isLastHalf(dayAtWork)}
-  class="day"
-  class:non-working={isNonWorkingDay(day) || !!publicHoliday}
-  on:click={onClick}
-  on:contextmenu|preventDefault={handleStartEditComment}
->
-  <h1>
-    {format(day, "d", { locale: nb })}
-    {#if isFirstDayOfMonth(day)}
-      {format(day, "MMMM", { locale: nb })}
+<div>
+  <div
+    class:selected={isSelected(dayAtWork) && !isEmpty(dayAtWork)}
+    class:first-half={isFirstHalf(dayAtWork)}
+    class:last-half={isLastHalf(dayAtWork)}
+    class="day"
+    class:non-working={isNonWorkingDay(day) || !!publicHoliday}
+    on:click={onClick}
+  >
+    <i class="fa-solid fa-comment comment-icon" on:click={handleStartEditComment} />
+
+    <h1>
+      {format(day, "d", { locale: nb })}
+      {#if isFirstDayOfMonth(day)}
+        {format(day, "MMMM", { locale: nb })}
+      {/if}
+    </h1>
+    {#if showDayName}
+      <h2>{format(day, "eeee", { locale: nb })}</h2>
     {/if}
-  </h1>
-  {#if showDayName}
-    <h2>{format(day, "eeee", { locale: nb })}</h2>
-  {/if}
-  {#if !!publicHoliday}
-    <h3>{publicHoliday.name}</h3>
-  {/if}
-  {#each teamEvents as teamEvent}
-    {@const eventName = isBeerEvent(teamEvent.name) ? "🍻 " + teamEvent.name : teamEvent.name}
-    <h3>
-      {@html emphasizeEmojis(eventName)} ({format(teamEvent.start, "HH:mm")}-{format(
-        teamEvent.end,
-        "HH:mm"
-      )})
-    </h3>
-  {/each}
-  {#if editComment}
-    <textarea
-      bind:this={commentField}
-      bind:value={comment}
-      class="inactive"
-      class:hide={!comment && !editComment}
-      on:blur={handleUpdateComment}
-    />
-  {:else if comment}
-    <p class="comment">
-      {@html emphasizeEmojis(comment || "")}
-    </p>
-  {/if}
+    {#if !!publicHoliday}
+      <h3>{publicHoliday.name}</h3>
+    {/if}
+    {#each teamEvents as teamEvent}
+      {@const eventName = isBeerEvent(teamEvent.name) ? "🍻 " + teamEvent.name : teamEvent.name}
+      <h3>
+        {@html emphasizeEmojis(eventName)} ({format(teamEvent.start, "HH:mm")}-{format(
+          teamEvent.end,
+          "HH:mm"
+        )})
+      </h3>
+    {/each}
+    {#if editComment}
+      <textarea
+        bind:this={commentField}
+        bind:value={comment}
+        class="inactive"
+        class:hide={!comment && !editComment}
+        on:blur={handleUpdateComment}
+      />
+    {:else if comment}
+      <p class="comment">
+        {@html emphasizeEmojis(comment || "")}
+      </p>
+    {/if}
+  </div>
 </div>
 
 <style>
@@ -151,12 +156,21 @@
     flex-direction: column;
     width: 100%;
     height: 100%;
+    position: relative;
   }
 
   @media only screen and (max-width: 480px) {
     .day {
       margin-bottom: 1rem;
     }
+  }
+
+  .comment-icon {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
   }
 
   .non-working {
