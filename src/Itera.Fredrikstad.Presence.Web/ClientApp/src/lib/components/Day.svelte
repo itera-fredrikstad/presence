@@ -182,6 +182,7 @@
     top: 1rem;
     font-size: 1.5rem;
     cursor: pointer;
+    color: #666;
   }
 
   .non-working {
