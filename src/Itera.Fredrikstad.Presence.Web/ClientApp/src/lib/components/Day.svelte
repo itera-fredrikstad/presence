@@ -6,6 +6,7 @@
   import type { Identifiable, DayAtWork, DayAtWorkType } from "../models";
   import type { PublicHoliday, TeamEvent } from "../api";
   import { emphasizeEmojis } from "../utils";
+  import { tooltip } from "./tooltip";
 
   export let day: Date;
   export let dayAtWork: Identifiable<DayAtWork> | undefined = null;
@@ -94,7 +95,9 @@
   const beerTriggers = ["pils", "fest", "øl"];
 
   function isBeerEvent(eventName: string) {
-    return beerTriggers.filter((t) => eventName.toLowerCase().includes(t)).length > 0;
+    return (
+      beerTriggers.filter((t) => eventName.toLowerCase().includes(t)).length > 0
+    );
   }
 </script>
 
@@ -107,7 +110,12 @@
     class:non-working={isNonWorkingDay(day) || !!publicHoliday}
     on:click={onClick}
   >
-    <i class="fa-solid fa-comment comment-icon" on:click={handleStartEditComment} />
+    <i
+      class="fa-solid fa-comment comment-icon"
+      use:tooltip
+      data-tooltip="Legg inn/redigér kommentar"
+      on:click={handleStartEditComment}
+    />
 
     <h1>
       {format(day, "d", { locale: nb })}
@@ -122,12 +130,14 @@
       <h3>{publicHoliday.name}</h3>
     {/if}
     {#each teamEvents as teamEvent}
-      {@const eventName = isBeerEvent(teamEvent.name) ? "🍻 " + teamEvent.name : teamEvent.name}
+      {@const eventName = isBeerEvent(teamEvent.name)
+        ? "🍻 " + teamEvent.name
+        : teamEvent.name}
       <h3>
-        {@html emphasizeEmojis(eventName)} ({format(teamEvent.start, "HH:mm")}-{format(
-          teamEvent.end,
+        {@html emphasizeEmojis(eventName)} ({format(
+          teamEvent.start,
           "HH:mm"
-        )})
+        )}-{format(teamEvent.end, "HH:mm")})
       </h3>
     {/each}
     {#if editComment}
@@ -176,7 +186,13 @@
 
   .non-working {
     color: #999;
-    background: repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #dfdfdf 5px, #dfdfdf 10px);
+    background: repeating-linear-gradient(
+      -45deg,
+      #efefef,
+      #efefef 5px,
+      #dfdfdf 5px,
+      #dfdfdf 10px
+    );
   }
 
   .day:hover {
@@ -196,7 +212,13 @@
   }
 
   .day.selected {
-    background: repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #ffcccb 5px, #ffcccb 10px);
+    background: repeating-linear-gradient(
+      -45deg,
+      #efefef,
+      #efefef 5px,
+      #ffcccb 5px,
+      #ffcccb 10px
+    );
   }
 
   .day.selected.first-half {
@@ -207,7 +229,13 @@
         rgba(238, 238, 238, 0) 50%,
         rgba(238, 238, 238, 0) 100%
       ),
-      repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #ffcccb 5px, #ffcccb 10px);
+      repeating-linear-gradient(
+        -45deg,
+        #efefef,
+        #efefef 5px,
+        #ffcccb 5px,
+        #ffcccb 10px
+      );
   }
 
   .day.selected.last-half {
@@ -218,7 +246,13 @@
         rgba(238, 238, 238, 0) 50%,
         rgba(238, 238, 238, 0) 100%
       ),
-      repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #ffcccb 5px, #ffcccb 10px);
+      repeating-linear-gradient(
+        -45deg,
+        #efefef,
+        #efefef 5px,
+        #ffcccb 5px,
+        #ffcccb 10px
+      );
   }
 
   .day h1 {
