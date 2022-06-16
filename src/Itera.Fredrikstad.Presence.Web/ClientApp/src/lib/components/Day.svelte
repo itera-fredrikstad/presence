@@ -113,7 +113,7 @@
     <i
       class="fa-solid fa-comment comment-icon"
       use:tooltip
-      data-tooltip="Legg inn kommentar"
+      data-tooltip="Legg inn/redigér kommentar"
       on:click={handleStartEditComment}
     />
 
