@@ -19,7 +19,13 @@
 
 <main>
   <div class="navigation">
-    <img class="logo" src={logo} alt="Logo" on:click={switchTheme} />
+    <img
+      class="logo"
+      src={logo}
+      alt="Itera logo"
+      aria-label="Switch between dark mode and light mode"
+      on:click={switchTheme}
+    />
     <div class="menu">
       <ul>
         <li>

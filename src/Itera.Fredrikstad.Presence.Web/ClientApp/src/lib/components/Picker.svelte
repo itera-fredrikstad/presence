@@ -203,6 +203,10 @@
     color: #333;
   }
 
+  :global(.dark) .fa-solid:hover {
+    color: #fff;
+  }
+
   .fa-circle-arrow-right {
     position: absolute;
     right: -100px;

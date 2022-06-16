@@ -207,9 +207,4 @@
       ),
       repeating-linear-gradient(-45deg, #666, #666 5px, #ff4b33 5px, #ff4b33 10px);
   }
-  .attendees {
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
 </style>
