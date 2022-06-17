@@ -87,8 +87,9 @@
         queryClient.setQueryData("dayAtWorks", context.previousDayAtWorks);
       },
       // Always refetch after error or success:
-      onSettled: () => {
+      onSettled: (data, error, variables, context) => {
         queryClient.invalidateQueries("dayAtWorks");
+        queryClient.invalidateQueries(["daySummary", variables.date]);
       },
     }
   );
