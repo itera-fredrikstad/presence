@@ -2,6 +2,7 @@ import axios from "axios";
 import { formatISO, parse, parseISO, parseJSON } from "date-fns";
 import type { DayAtWork, DayAtWorkType, DaySummary, Identifiable } from "./models";
 import { getDayId, map } from "./utils";
+import debounce from "p-debounce";
 
 export type DayAtWorkItemsMap = { [id: string]: Identifiable<DayAtWork> };
 
@@ -51,6 +52,8 @@ export async function getDayAtWorkItems(day: Date): Promise<DayAtWork[]> {
   return res.data.attendees
 }
 
+const debouncedAddOrUpdateDayAtWork = debounce(async (dto: DayAtWorkDto) => await axios.put("api/dayAtWork", dto), 3000);
+
 export async function addOrUpdateDayAtWork(dayAtWork: DayAtWork) {
   const dto: DayAtWorkDto = {
     userId: dayAtWork.userId,
@@ -59,7 +62,7 @@ export async function addOrUpdateDayAtWork(dayAtWork: DayAtWork) {
     comment: dayAtWork.comment
   };
   
-  await axios.put("api/dayAtWork", dto);
+  await debouncedAddOrUpdateDayAtWork(dto);
 }
 
 export type PublicHolidayDto = {
