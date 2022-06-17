@@ -12,7 +12,9 @@
 
   export let day: Date;
 
-  $: query = day && useQuery(["daySummary", day], () => getDayAtWorkItems(day));
+  $: query = day && useQuery(["daySummary", day], () => getDayAtWorkItems(day), {
+    staleTime: 1000 * 60 * 5 // 5 minutes
+  });
 
   function isSelected(dayAtWork: DayAtWork): boolean {
     return !!dayAtWork && !!dayAtWork.type;

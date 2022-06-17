@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { afterUpdate } from "svelte";
+  import { beforeUpdate } from "svelte";
   import { format, isFirstDayOfMonth, isSaturday, isSunday } from "date-fns";
   import { nb } from "date-fns/locale";
 
@@ -16,14 +16,13 @@
 
   export let showDayName: boolean = true;
 
-  let pressed;
   let editComment: boolean;
   let commentField: any;
   let comment: string;
 
-  let oldDayAtWork = dayAtWork;
+  let oldDayAtWork: Identifiable<DayAtWork>;
 
-  afterUpdate(() => {
+  beforeUpdate(() => {
     if (oldDayAtWork !== dayAtWork) {
       comment = dayAtWork?.comment;
       oldDayAtWork = dayAtWork;

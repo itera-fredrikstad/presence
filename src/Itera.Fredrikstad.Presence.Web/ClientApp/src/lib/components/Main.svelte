@@ -10,7 +10,10 @@
   let page = document?.location?.hash;
   export let switchTheme;
 
-  $: query = useQuery(["user"], () => getUser());
+  $: query = useQuery(["user"], () => getUser(), {
+    staleTime: Infinity,
+    cacheTime: Infinity,
+  });
 
   window.onpopstate = function () {
     page = document.location.hash;
@@ -43,8 +46,12 @@
     </div>
   </div>
   <div class="content-root">
-    {#if page === "#registrering" && !!$query.data?.userId}
-      <Picker userId={$query.data.userId} />
+    {#if page === "#registrering"}
+      {#if !!$query.data?.userId}
+        <Picker userId={$query.data.userId} />
+      {:else}
+        <h1>Laster...</h1>
+      {/if}
     {:else}
       <Summary />
     {/if}

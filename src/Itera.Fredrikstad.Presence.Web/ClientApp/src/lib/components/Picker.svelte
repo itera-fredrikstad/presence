@@ -37,14 +37,20 @@
   );
   $: currentYear = format(currentWindow[0], "yyyy");
 
-  $: holidayQuery = useQuery(["publicHolidays", currentYear], () => getPublicHolidays(currentYear));
-  $: query = useQuery(["dayAtWorks"], () => getDayAtWorkItemsForUser());
+  $: holidayQuery = useQuery(["publicHolidays", currentYear], () => getPublicHolidays(currentYear), {
+    staleTime: Infinity,
+    cacheTime: Infinity
+  });
+  
+  $: query = useQuery("dayAtWorks", () => getDayAtWorkItemsForUser(), {
+    staleTime: 1000 * 60 * 10, // 10 minutes
+    cacheTime: 1000 * 60 * 10 // 10 minutes
+  });
 
-  $: userQuery = useQuery(["loggedInUser"], () => getUser());
-
-  $: userId = $userQuery?.data?.userId ?? "";
-
-  const teamEventsQuery = useQuery("teamEvents", () => getTeamEvents());
+  const teamEventsQuery = useQuery("teamEvents", () => getTeamEvents(), {
+    staleTime: 1000 * 60 * 10, // 10 minutes,
+    cacheTime: 1000 * 60 * 10
+  });
 
   function handleNext() {
     offset++;
@@ -60,29 +66,29 @@
     (newDayAtWork: Identifiable<DayAtWork>) => addOrUpdateDayAtWork(newDayAtWork),
     {
       // When mutate is called:
-      onMutate: async (newTodo) => {
+      onMutate: async (newDayAtWork) => {
         // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-        await queryClient.cancelQueries(["dayAtWorks", newTodo.userId]);
+        await queryClient.cancelQueries("dayAtWorks");
 
         // Snapshot the previous value
-        const previousTodos = queryClient.getQueryData(["dayAtWorks", newTodo.userId]);
+        const previousDayAtWorks = queryClient.getQueryData("dayAtWorks");
 
         // Optimistically update to the new value
-        queryClient.setQueryData(["dayAtWorks", newTodo.userId], (old: {}) => ({
+        queryClient.setQueryData("dayAtWorks", (old: {}) => ({
           ...old,
-          [newTodo.id]: newTodo,
+          [newDayAtWork.id]: newDayAtWork,
         }));
 
         // Return a context object with the snapshotted value
-        return { previousTodos };
+        return { previousDayAtWorks };
       },
       // If the mutation fails, use the context returned from onMutate to roll back
       onError: (err, newTodo, context: any) => {
-        queryClient.setQueryData(["dayAtWorks", newTodo.userId], context.previousTodos);
+        queryClient.setQueryData("dayAtWorks", context.previousDayAtWorks);
       },
       // Always refetch after error or success:
       onSettled: () => {
-        queryClient.invalidateQueries(["dayAtWorks"]);
+        queryClient.invalidateQueries("dayAtWorks");
       },
     }
   );
@@ -128,6 +134,7 @@
         style="transform: translateX({offset * -100}%); transform-origin: 0 0"
       >
         {#each workDays as day}
+          {@debug day}
           {@const dayId = getDayId(day)}
           {@const dayAtWork = $query?.data?.[dayId]}
           {@const publicHoliday = $holidayQuery?.data?.[dayId]}
