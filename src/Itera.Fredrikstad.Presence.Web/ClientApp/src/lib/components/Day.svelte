@@ -95,9 +95,7 @@
   const beerTriggers = ["pils", "fest", "øl"];
 
   function isBeerEvent(eventName: string) {
-    return (
-      beerTriggers.filter((t) => eventName.toLowerCase().includes(t)).length > 0
-    );
+    return beerTriggers.filter((t) => eventName.toLowerCase().includes(t)).length > 0;
   }
 </script>
 
@@ -130,14 +128,12 @@
       <h3>{publicHoliday.name}</h3>
     {/if}
     {#each teamEvents as teamEvent}
-      {@const eventName = isBeerEvent(teamEvent.name)
-        ? "🍻 " + teamEvent.name
-        : teamEvent.name}
+      {@const eventName = isBeerEvent(teamEvent.name) ? "🍻 " + teamEvent.name : teamEvent.name}
       <h3>
-        {@html emphasizeEmojis(eventName)} ({format(
-          teamEvent.start,
+        {@html emphasizeEmojis(eventName)} ({format(teamEvent.start, "HH:mm")}-{format(
+          teamEvent.end,
           "HH:mm"
-        )}-{format(teamEvent.end, "HH:mm")})
+        )})
       </h3>
     {/each}
     {#if editComment}
@@ -170,6 +166,10 @@
     position: relative;
   }
 
+  :global(.dark) .day {
+    background-color: #555;
+  }
+
   @media only screen and (max-width: 480px) {
     .day {
       margin-bottom: 1rem;
@@ -185,21 +185,25 @@
     color: #666;
   }
 
+  :global(.dark) .comment-icon {
+    color: #999;
+  }
+
   .non-working {
     color: #999;
-    background: repeating-linear-gradient(
-      -45deg,
-      #efefef,
-      #efefef 5px,
-      #dfdfdf 5px,
-      #dfdfdf 10px
-    );
+    background: repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #dfdfdf 5px, #dfdfdf 10px);
+  }
+
+  :global(.dark) .non-working {
+    background: repeating-linear-gradient(-45deg, #444, #444 5px, #666 5px, #666 10px);
   }
 
   .day:hover {
     background-color: #eaeaea;
   }
-
+  :global(.dark) .day:hover {
+    background-color: #444;
+  }
   .day textarea:focus {
     outline: none;
   }
@@ -213,13 +217,11 @@
   }
 
   .day.selected {
-    background: repeating-linear-gradient(
-      -45deg,
-      #efefef,
-      #efefef 5px,
-      #ffcccb 5px,
-      #ffcccb 10px
-    );
+    background: repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #ffcccb 5px, #ffcccb 10px);
+  }
+
+  :global(.dark) .day.selected {
+    background: repeating-linear-gradient(-45deg, #666, #666 5px, #ff4b33 5px, #ff4b33 10px);
   }
 
   .day.selected.first-half {
@@ -230,13 +232,18 @@
         rgba(238, 238, 238, 0) 50%,
         rgba(238, 238, 238, 0) 100%
       ),
-      repeating-linear-gradient(
-        -45deg,
-        #efefef,
-        #efefef 5px,
-        #ffcccb 5px,
-        #ffcccb 10px
-      );
+      repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #ffcccb 5px, #ffcccb 10px);
+  }
+
+  :global(.dark) .day.selected.first-half {
+    background: linear-gradient(
+        to top,
+        #666 0%,
+        #666 50%,
+        rgba(238, 238, 238, 0) 50%,
+        rgba(238, 238, 238, 0) 100%
+      ),
+      repeating-linear-gradient(-45deg, #666, #666 5px, #ff4b33 5px, #ff4b33 10px);
   }
 
   .day.selected.last-half {
@@ -247,13 +254,18 @@
         rgba(238, 238, 238, 0) 50%,
         rgba(238, 238, 238, 0) 100%
       ),
-      repeating-linear-gradient(
-        -45deg,
-        #efefef,
-        #efefef 5px,
-        #ffcccb 5px,
-        #ffcccb 10px
-      );
+      repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #ffcccb 5px, #ffcccb 10px);
+  }
+
+  :global(.dark) .day.selected.last-half {
+    background: linear-gradient(
+        to bottom,
+        #666 0%,
+        #666 50%,
+        rgba(238, 238, 238, 0) 50%,
+        rgba(238, 238, 238, 0) 100%
+      ),
+      repeating-linear-gradient(-45deg, #666, #666 5px, #ff4b33 5px, #ff4b33 10px);
   }
 
   .day h1 {
@@ -279,6 +291,12 @@
     padding: 0.2rem 0.5rem;
     text-transform: uppercase;
     width: fit-content;
+  }
+
+  :global(.dark) .day h1,
+  :global(.dark) .day h2,
+  :global(.dark) .day h3 {
+    background-color: #666;
   }
 
   h3 > :global(.emoji) {
@@ -309,6 +327,10 @@
     width: fit-content;
     font-weight: 300;
     white-space: pre-wrap;
+  }
+
+  :global(.dark) .comment {
+    background-color: #666;
   }
 
   .comment > :global(.emoji) {

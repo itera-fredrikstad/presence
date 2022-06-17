@@ -8,6 +8,7 @@
   import SimpleAvatar from "./SimpleAvatar.svelte";
 
   let page = document?.location?.hash;
+  export let switchTheme;
 
   $: query = useQuery(["user"], () => getUser());
 
@@ -18,7 +19,13 @@
 
 <main>
   <div class="navigation">
-    <img class="logo" src={logo} alt="Logo" />
+    <img
+      class="logo"
+      src={logo}
+      alt="Itera logo"
+      aria-label="Switch between dark mode and light mode"
+      on:click={switchTheme}
+    />
     <div class="menu">
       <ul>
         <li>
@@ -84,9 +91,14 @@
     color: #333;
   }
 
+  :global(.dark) .navigation a {
+    color: white;
+  }
+
   .logo {
     width: 56px;
     margin-left: 5rem;
+    cursor: pointer;
   }
 
   .menu {

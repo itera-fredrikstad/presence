@@ -100,12 +100,6 @@
     display: flex;
   }
 
-  @media only screen and (max-width: 480px) {
-    .days {
-      flex-direction: column;
-    }
-  }
-
   .slide {
     transition: all 0.5s;
   }
@@ -116,6 +110,10 @@
 
   .fa-solid:hover {
     color: #333;
+  }
+
+  :global(.dark) .fa-solid:hover {
+    color: #fff;
   }
 
   .fa-circle-arrow-right {
@@ -132,5 +130,17 @@
     top: 50%;
     transform: translateY(-50%);
     font-size: 2rem;
+  }
+  @media only screen and (max-width: 480px) {
+    .days {
+      flex-direction: column;
+    }
+    .fa-circle-arrow-right {
+      display: none;
+    }
+
+    .fa-circle-arrow-left {
+      display: none;
+    }
   }
 </style>

@@ -54,7 +54,7 @@
       class:last-half={isLastHalf(attendee)}
       class="attendee"
     >
-      <p>{users[attendee.userId]}</p>
+      <p class="name">{users[attendee.userId]}</p>
       {#if attendee.comment}
         <p class="comment">{@html emphasizeEmojis(attendee.comment)}</p>
       {/if}
@@ -83,6 +83,10 @@
     flex-shrink: 0;
   }
 
+  :global(.dark) .day {
+    background-color: #555;
+  }
+
   @media only screen and (max-width: 480px) {
     .day {
       flex-basis: 100%;
@@ -95,12 +99,21 @@
     background-color: #eaeaea;
   }
 
+  :global(.dark) .day:hover {
+    background-color: #444;
+  }
+
   .day h1 {
     margin: 0;
     font-size: 1rem;
     background-color: #efefef;
     padding: 0.2rem 0.5rem;
     max-width: 100%;
+  }
+
+  :global(.dark) .day h1,
+  :global(.dark) .day h2 {
+    background-color: #666;
   }
 
   .day h2 {
@@ -135,9 +148,23 @@
     width: 100%;
     border: 1px solid #ffcccb;
   }
+
+  :global(.dark) .attendee {
+    border: 1px solid #ff4b33;
+  }
+
+  :global(.dark) .attendee p {
+    color: #fff;
+  }
+
   .attendee.selected {
     background: repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #ffcccb 5px, #ffcccb 10px);
   }
+
+  :global(.dark) .attendee.selected {
+    background: repeating-linear-gradient(-45deg, #666, #666 5px, #ff4b33 5px, #ff4b33 10px);
+  }
+
   .attendee.selected.first-half {
     background: linear-gradient(
         to left,
@@ -147,6 +174,17 @@
         rgba(238, 238, 238, 0) 100%
       ),
       repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #ffcccb 5px, #ffcccb 10px);
+  }
+
+  :global(.dark) .attendee.selected.first-half {
+    background: linear-gradient(
+        to left,
+        #666 0%,
+        #666 50%,
+        rgba(238, 238, 238, 0) 50%,
+        rgba(238, 238, 238, 0) 100%
+      ),
+      repeating-linear-gradient(-45deg, #666, #666 5px, #ff4b33 5px, #ff4b33 10px);
   }
   .attendee.selected.last-half {
     background: linear-gradient(
@@ -158,9 +196,15 @@
       ),
       repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #ffcccb 5px, #ffcccb 10px);
   }
-  .attendees {
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: 12px;
+
+  :global(.dark) .attendee.selected.last-half {
+    background: linear-gradient(
+        to right,
+        #666 0%,
+        #666 50%,
+        rgba(238, 238, 238, 0) 50%,
+        rgba(238, 238, 238, 0) 100%
+      ),
+      repeating-linear-gradient(-45deg, #666, #666 5px, #ff4b33 5px, #ff4b33 10px);
   }
 </style>
