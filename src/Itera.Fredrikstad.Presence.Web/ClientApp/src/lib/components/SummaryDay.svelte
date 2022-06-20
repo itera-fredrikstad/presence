@@ -84,7 +84,8 @@
   }
 
   :global(.dark) .day {
-    background-color: #555;
+    background-color: #333;
+    border: 1px solid #444;
   }
 
   @media only screen and (max-width: 480px) {
