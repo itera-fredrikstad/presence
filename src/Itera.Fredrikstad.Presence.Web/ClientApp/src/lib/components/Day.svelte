@@ -166,7 +166,8 @@
   }
 
   :global(.dark) .day {
-    background-color: #555;
+    background-color: #333;
+    border: 1px solid #444;
   }
 
   @media only screen and (max-width: 480px) {
@@ -295,7 +296,7 @@
   :global(.dark) .day h1,
   :global(.dark) .day h2,
   :global(.dark) .day h3 {
-    background-color: #666;
+    background-color: #555;
   }
 
   h3 > :global(.emoji) {
@@ -329,7 +330,7 @@
   }
 
   :global(.dark) .comment {
-    background-color: #666;
+    background-color: #555;
   }
 
   .comment > :global(.emoji) {

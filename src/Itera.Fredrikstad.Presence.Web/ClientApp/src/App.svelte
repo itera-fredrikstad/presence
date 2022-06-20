@@ -19,7 +19,7 @@
 
 <style>
   :global(.dark) {
-    background: #333;
+    background: #222;
     color: #f1f8ff;
   }
 </style>
