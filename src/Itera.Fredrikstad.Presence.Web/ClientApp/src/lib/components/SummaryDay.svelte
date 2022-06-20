@@ -12,9 +12,11 @@
 
   export let day: Date;
 
-  $: query = day && useQuery(["daySummary", day], () => getDayAtWorkItems(day), {
-    staleTime: 1000 * 60 * 5 // 5 minutes
-  });
+  $: query =
+    day &&
+    useQuery(["daySummary", day], () => getDayAtWorkItems(day), {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+    });
 
   function isSelected(dayAtWork: DayAtWork): boolean {
     return !!dayAtWork && !!dayAtWork.type;
@@ -86,7 +88,8 @@
   }
 
   :global(.dark) .day {
-    background-color: #555;
+    background-color: #333;
+    border: 1px solid #444;
   }
 
   @media only screen and (max-width: 480px) {
