@@ -23,6 +23,19 @@ export async function getUser(): Promise<UserDto> {
   return (await axios.get<UserDto>(`api/user`)).data;
 }
 
+export function mapDayAtWorkItem(dayDto: DayAtWorkDto): Identifiable<DayAtWork> {
+  const date = parseJSON(dayDto.date);
+  const id = getDayId(date);
+
+  return ({
+    id,
+    date,
+    userId: dayDto.userId,
+    type: dayDto.type,
+    comment: dayDto.comment
+  });
+}
+
 export async function getDayAtWorkItemsForUser(): Promise<DayAtWorkItemsMap> {
   const res = await axios
     .get<DayAtWorkDto[]>(`api/dayAtWork`);
@@ -30,15 +43,7 @@ export async function getDayAtWorkItemsForUser(): Promise<DayAtWorkItemsMap> {
   return res.data.reduce(
     (p, n) => ({
       ...p,
-      ...(map(parseJSON(n.date), date => map(getDayId(date), id => ({
-        [id]: ({
-          id,
-          userId: n.userId,
-          date,
-          type: n.type,
-          comment: n.comment
-        })
-      }))))
+      ...(map(mapDayAtWorkItem(n), d => ({[d.id]: d})))
     }),
     {} as DayAtWorkItemsMap);
 }
@@ -52,9 +57,12 @@ export async function getDayAtWorkItems(day: Date): Promise<DayAtWork[]> {
   return res.data.attendees
 }
 
-const debouncedAddOrUpdateDayAtWork = debounce(async (dto: DayAtWorkDto) => await axios.put("api/dayAtWork", dto), 3000);
+const debouncedAddOrUpdateDayAtWork = debounce(async (dto: DayAtWorkDto) => {
+  var res = await axios.put<DayAtWorkDto>("api/dayAtWork", dto);
+  return mapDayAtWorkItem(res.data);
+}, 1500);
 
-export async function addOrUpdateDayAtWork(dayAtWork: DayAtWork) {
+export async function addOrUpdateDayAtWork(dayAtWork: DayAtWork): Promise<DayAtWork> {
   const dto: DayAtWorkDto = {
     userId: dayAtWork.userId,
     date: formatISO(dayAtWork.date, { representation: "date" }),
@@ -62,7 +70,7 @@ export async function addOrUpdateDayAtWork(dayAtWork: DayAtWork) {
     comment: dayAtWork.comment
   };
   
-  await debouncedAddOrUpdateDayAtWork(dto);
+  return await debouncedAddOrUpdateDayAtWork(dto);
 }
 
 export type PublicHolidayDto = {

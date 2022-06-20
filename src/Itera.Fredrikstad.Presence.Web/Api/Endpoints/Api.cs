@@ -46,7 +46,7 @@ public static class Api
     {
         var result = await cache.GetOrCreateAsync("summary-" + date.Date, async entry =>
         {
-            entry.SetSlidingExpiration(TimeSpan.FromMinutes(10));
+            entry.SetSlidingExpiration(TimeSpan.FromMinutes(60));
             return new DaySummary(
                 date, (await repo.GetAttendees(date.Date))
                 .Select(a => new DayAttendee(a.UserId, a.Type, a.Comment))
@@ -69,7 +69,7 @@ public static class Api
                     "summary-" + date,
                     async entry =>
                     {
-                        entry.SetSlidingExpiration(TimeSpan.FromMinutes(10));
+                        entry.SetSlidingExpiration(TimeSpan.FromMinutes(60));
                         return new DaySummary(
                             date, (await repo.GetAttendees(date))
                             .Select(a => new DayAttendee(a.UserId, a.Type, a.Comment))
@@ -80,13 +80,13 @@ public static class Api
         return Results.Extensions.Ok(result);
     }
 
-    private static async Task<Ok> Update([FromBody] DayAtWork dayAtWork, [FromServices] IDayAtWorkRepository repo, [FromServices] IMemoryCache cache)
+    private static async Task<Ok<DayAtWork>> Update([FromBody] DayAtWork dayAtWork, [FromServices] IDayAtWorkRepository repo, [FromServices] IMemoryCache cache)
     {
         await repo.Update(dayAtWork);
         
         cache.Remove("summary-" + dayAtWork.Date.Date);
         
-        return Results.Extensions.Ok();
+        return Results.Extensions.Ok(dayAtWork);
     }
 
     private static async Task<Ok<List<TeamEvent>>> GetEvents([FromServices] IConfiguration config)

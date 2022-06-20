@@ -82,13 +82,18 @@
         // Return a context object with the snapshotted value
         return { previousDayAtWorks };
       },
+      onSuccess: (data) => {
+        queryClient.setQueryData("dayAtWorks", (old: {}) => ({
+          ...old,
+          [getDayId(data.date)]: data,
+        }));
+      },
       // If the mutation fails, use the context returned from onMutate to roll back
       onError: (err, newTodo, context: any) => {
         queryClient.setQueryData("dayAtWorks", context.previousDayAtWorks);
       },
       // Always refetch after error or success:
       onSettled: (data, error, variables, context) => {
-        queryClient.invalidateQueries("dayAtWorks");
         queryClient.invalidateQueries(["daySummary", variables.date]);
       },
     }
