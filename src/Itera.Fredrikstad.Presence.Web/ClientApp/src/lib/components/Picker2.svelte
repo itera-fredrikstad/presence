@@ -111,7 +111,11 @@
   <div class="heading-container">
     <h1>Registrering</h1>
     <div class="toggle-container">
-      <Toggle bind:toggled={displayMonthView} label="Månedsvisning" />
+      <Toggle
+        bind:toggled={displayMonthView}
+        label="Månedsvisning"
+        toggledColor="#ff4b33"
+      />
     </div>
   </div>
   {#if displayMonthView}
