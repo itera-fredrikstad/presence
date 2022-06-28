@@ -14,11 +14,11 @@ public static class Api
     public static void MapApi(this IEndpointRouteBuilder app)
     {
         app.MapGet("api/user", GetUser);
-        app.MapGet("api/daySummary", GetDaySummary);
+        app.MapGet("api/daySummary", GetDaySummary).AllowAnonymous();
         app.MapGet("api/daySummaryRange", GetDaySummaryRange);
         app.MapGet("api/dayAtWork", GetDayAtWorks);
         app.MapPut("api/dayAtWork", Update);
-        app.MapGet("api/teamEvents", GetEvents);
+        app.MapGet("api/teamEvents", GetEvents).AllowAnonymous();
     }
 
     private static async Task<Results<Ok<User>, Unauthorized>> GetUser(HttpContext context, [FromServices] IDayAtWorkRepository repo)
@@ -41,7 +41,6 @@ public static class Api
         return Results.Extensions.Unauthorized();
     }
 
-    [AllowAnonymous]
     private static async Task<Ok<DaySummary>> GetDaySummary([FromQuery] DateTime date, [FromServices] IDayAtWorkRepository repo, [FromServices] IMemoryCache cache)
     {
         var result = await cache.GetOrCreateAsync("summary-" + date.Date, async entry =>
@@ -56,7 +55,6 @@ public static class Api
         return Results.Extensions.Ok(result);
     }
     
-    [AllowAnonymous]
     private static async Task<Ok<List<DaySummary>>> GetDaySummaryRange([FromQuery] DateTime fromDate, [FromQuery] DateTime toDate, [FromServices] IDayAtWorkRepository repo, [FromServices] IMemoryCache cache)
     {
         var datesToRetrieve = Enumerable

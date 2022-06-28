@@ -6,6 +6,7 @@ using Itera.Fredrikstad.Presence.Web.Api.Endpoints;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Graph;
 using Microsoft.Identity.Web;
@@ -90,6 +91,18 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme).A
                 }
             }
         };
+
+        options.Events.OnRedirectToIdentityProvider = context => 
+        {
+            if(context.Request.Path.StartsWithSegments("/api"))
+            {
+                context.HandleResponse();
+                context.Response.Clear();
+                context.Response.StatusCode = 401;
+            }
+
+            return Task.CompletedTask;
+        };
     })
     // </AddSignInSnippet>
     // Add ability to call web API (Graph)
@@ -103,12 +116,6 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme).A
     // Use in-memory token cache
     // See https://github.com/AzureAD/microsoft-identity-web/wiki/token-cache-serialization
     .AddInMemoryTokenCaches();
-
-builder.Services.AddAuthorization(options =>
-{
-    options.FallbackPolicy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser().Build();
-});
 
 builder.Services.AddTransient<IDayAtWorkRepository, DayAtWorkSqlRepository>();
 
@@ -128,28 +135,34 @@ app.UseCors(opts =>
     opts.AllowAnyHeader();
 });
 
+app.UseSwagger();
+app.UseSwaggerUI();
+
 app.UseCookiePolicy();
 
 app.UseAuthentication();
+app.UseRouting();
 
 app.Use(async (context, next) =>
 {
-    if (!(context.User.Identity?.IsAuthenticated ?? false) &&
-        !context.Request.Path.ToString().Equals("/api/daySummary"))
-    {
-        await context.ChallengeAsync();
-    }
-    else
+    var endpointMetadata = context.Features.Get<IEndpointFeature>()?.Endpoint?.Metadata;
+    
+    if (context.User.Identity is { IsAuthenticated: true })
     {
         await next();
+        return;
     }
+
+    if(endpointMetadata?.Any(m => m is AllowAnonymousAttribute) ?? false) 
+    {
+        await next();
+        return;
+    }
+
+    await context.ChallengeAsync();
 });
 
-app.UseSwagger();
-app.UseSwaggerUI();
 app.UseStaticFiles();
-app.UseRouting();
-app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
