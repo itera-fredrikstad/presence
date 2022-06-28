@@ -2,7 +2,7 @@
   import logo from "../../assets/img/itera.png";
 
   import { useQuery, useQueryClient } from "@sveltestack/svelte-query";
-  import Picker from "./Picker.svelte";
+  import Picker from "./Picker2.svelte";
   import Summary from "./Summary.svelte";
   import { getUser } from "../api";
   import SimpleAvatar from "./SimpleAvatar.svelte";

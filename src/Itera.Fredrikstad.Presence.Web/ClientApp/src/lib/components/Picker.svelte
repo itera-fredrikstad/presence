@@ -7,7 +7,6 @@
     getDayAtWorkItemsForUser,
     getPublicHolidays,
     getTeamEvents,
-    getUser,
   } from "../api";
   import Day from "./Day.svelte";
 
@@ -151,6 +150,7 @@
               {dayAtWork}
               {publicHoliday}
               {teamEvents}
+              isActive={true}
               onUpdate={(updated) => handleUpdate(day, dayAtWork, updated)}
             />
           </div>

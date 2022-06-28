@@ -1,6 +1,6 @@
 <script lang="ts">
   import { beforeUpdate } from "svelte";
-  import { format, isFirstDayOfMonth, isSaturday, isSunday } from "date-fns";
+  import { format, isFirstDayOfMonth, isSaturday, isSunday, isSameDay } from "date-fns";
   import { nb } from "date-fns/locale";
 
   import type { Identifiable, DayAtWork, DayAtWorkType } from "../models";
@@ -15,6 +15,8 @@
   export let onUpdate: (dayAtWork: Partial<DayAtWork>) => void;
 
   export let showDayName: boolean = true;
+  export let showWeekNumber: boolean = false;
+  export let isActive: boolean = true;
 
   let editComment: boolean;
   let commentField: any;
@@ -105,6 +107,7 @@
     class:last-half={isLastHalf(dayAtWork)}
     class="day"
     class:non-working={isNonWorkingDay(day) || !!publicHoliday}
+    class:inactive={!isActive}
     on:click={onClick}
   >
     <i
@@ -192,6 +195,10 @@
   .non-working {
     color: #999;
     background: repeating-linear-gradient(-45deg, #efefef, #efefef 5px, #dfdfdf 5px, #dfdfdf 10px);
+  }
+
+  .inactive {
+    opacity: 40%;
   }
 
   :global(.dark) .non-working {

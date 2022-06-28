@@ -27,6 +27,7 @@
     "emoji-regex": "^10.1.0",
     "p-debounce": "^4.0.0",
     "svelte-dark-mode": "^2.1.0",
-    "svelte-select": "^4.4.7"
+    "svelte-select": "^4.4.7",
+    "svelte-toggle": "^3.1.0"
   }
 }
