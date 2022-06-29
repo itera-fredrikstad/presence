@@ -1,6 +1,6 @@
 <script lang="ts">
   import { beforeUpdate } from "svelte";
-  import { format, isFirstDayOfMonth, isSaturday, isSunday, isSameDay } from "date-fns";
+  import { format, isFirstDayOfMonth, isSaturday, isSunday, isSameDay, isMonday, getISOWeek } from "date-fns";
   import { nb } from "date-fns/locale";
 
   import type { Identifiable, DayAtWork, DayAtWorkType } from "../models";
@@ -125,6 +125,9 @@
     </h1>
     {#if showDayName}
       <h2>{format(day, "eeee", { locale: nb })}</h2>
+    {/if}
+    {#if showWeekNumber && isMonday(day)}
+      <h3>uke {getISOWeek(day)}</h3>
     {/if}
     {#if !!publicHoliday}
       <h3>{publicHoliday.name}</h3>

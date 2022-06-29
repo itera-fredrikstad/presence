@@ -100,6 +100,7 @@
                   {publicHoliday}
                   teamEvents={events}
                   showDayName={false}
+                  showWeekNumber={true}
                   isActive={day > today || isSameDay(day, today)}
                   onUpdate={(updated) => onUpdate(day, dayAtWork, updated)}
                 />
