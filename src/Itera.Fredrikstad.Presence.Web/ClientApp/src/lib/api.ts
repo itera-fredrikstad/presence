@@ -3,6 +3,7 @@ import { formatISO, parse, parseISO, parseJSON } from "date-fns";
 import type { DayAtWork, DayAtWorkType, DaySummary, Identifiable } from "./models";
 import { getDayId, map } from "./utils";
 import debounce from "p-debounce";
+import memoize from "p-memoize";
 
 export type DayAtWorkItemsMap = { [id: string]: Identifiable<DayAtWork> };
 
@@ -57,11 +58,6 @@ export async function getDayAtWorkItems(day: Date): Promise<DayAtWork[]> {
   return res.data.attendees
 }
 
-const debouncedAddOrUpdateDayAtWork = debounce(async (dto: DayAtWorkDto) => {
-  var res = await axios.put<DayAtWorkDto>("api/dayAtWork", dto);
-  return mapDayAtWorkItem(res.data);
-}, 1500);
-
 export async function addOrUpdateDayAtWork(dayAtWork: DayAtWork): Promise<DayAtWork> {
   const dto: DayAtWorkDto = {
     userId: dayAtWork.userId,
@@ -70,7 +66,9 @@ export async function addOrUpdateDayAtWork(dayAtWork: DayAtWork): Promise<DayAtW
     comment: dayAtWork.comment
   };
   
-  return await debouncedAddOrUpdateDayAtWork(dto);
+  const res = await axios.put<DayAtWorkDto>("api/dayAtWork", dto);
+  
+  return mapDayAtWorkItem(res.data);
 }
 
 export type PublicHolidayDto = {

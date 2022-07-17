@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "p-memoize": "^7.1.0"
+  }
+}
